@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Site oficial da Jornada Científica."
+  >
+
+  <title>Jornada Científica</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header class="cabecalho">
+    <div class="container cabecalho-conteudo">
+
+      <a href="#inicio" class="logo">
+        Jornada Científica
+      </a>
+
+      <button
+        class="botao-menu"
+        id="botaoMenu"
+        type="button"
+        aria-label="Abrir menu"
+        aria-expanded="false"
+      >
+        ☰
+      </button>
+
+      <nav class="menu" id="menuPrincipal">
+        <a href="#sobre">Sobre</a>
+        <a href="#programacao">Programação</a>
+        <a href="#palestrantes">Palestrantes</a>
+        <a href="#ao-vivo">Ao vivo</a>
+        <a href="#submissao">Submissão</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <main>
+
+    <section class="hero" id="inicio">
+      <div class="container hero-conteudo">
+
+        <div class="hero-texto">
+          <span class="hero-etiqueta">
+            Evento científico
+          </span>
+
+          <p class="hero-edicao" id="eventoEdicao">
+            6ª Jornada Científica
+          </p>
+
+          <h1 id="eventoTema">
+            Ciência e Sociedade
+          </h1>
+
+          <p class="hero-subtitulo" id="eventoSubtitulo">
+            Conectando saberes diante das mudanças climáticas
+          </p>
+
+          <p class="hero-data" id="eventoData">
+            10 a 13 de novembro
+          </p>
+
+          <div class="hero-botoes">
+            <a
+              href="#programacao"
+              class="botao botao-principal"
+            >
+              Ver programação
+            </a>
+
+            <a
+              href="#submissao"
+              class="botao botao-secundario"
+            >
+              Submeter trabalho
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-imagem">
+          <img
+            src="assets/imagens/cartaz-jornada.png"
+            alt="Cartaz da Jornada Científica"
+          >
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao" id="sobre">
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span>Conheça o evento</span>
+          <h2>Sobre a Jornada Científica</h2>
+        </div>
+
+        <div class="sobre-grid">
+
+          <div class="sobre-texto">
+            <p>
+              A Jornada Científica é um espaço de integração,
+              aprendizado e divulgação do conhecimento acadêmico.
+            </p>
+
+            <p>
+              O evento reúne estudantes, professores, pesquisadores
+              e profissionais para discutir temas atuais e apresentar
+              trabalhos científicos de diferentes áreas do conhecimento.
+            </p>
+          </div>
+
+          <div class="sobre-destaques">
+
+            <article class="destaque-card">
+              <strong>4 dias</strong>
+              <span>de programação</span>
+            </article>
+
+            <article class="destaque-card">
+              <strong>Ao vivo</strong>
+              <span>pelo YouTube</span>
+            </article>
+
+            <article class="destaque-card">
+              <strong>Várias áreas</strong>
+              <span>em salas no Meet</span>
+            </article>
+
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section class="secao secao-escura" id="programacao">
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span>Confira os horários</span>
+          <h2>Programação</h2>
+        </div>
+
+        <div id="listaProgramacao" class="programacao-grid">
+          <!-- A programação será inserida pelo JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao" id="palestrantes">
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span>Convidados</span>
+          <h2>Palestrantes</h2>
+        </div>
+
+        <div id="listaPalestrantes" class="palestrantes-grid">
+          <!-- Os palestrantes serão inseridos pelo JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao secao-ao-vivo" id="ao-vivo">
+      <div class="container">
+
+        <div class="ao-vivo-conteudo">
+
+          <div>
+            <span class="indicador-ao-vivo">
+              Transmissão
+            </span>
+
+            <h2>Evento ao vivo</h2>
+
+            <p>
+              Acompanhe as palestras pelo YouTube e, após o intervalo,
+              acesse a sala correspondente à sua área de apresentação.
+            </p>
+          </div>
+
+          <div class="ao-vivo-acoes">
+
+            <a
+              href="#"
+              id="botaoYoutube"
+              class="botao botao-youtube"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Assistir no YouTube
+            </a>
+
+            <a
+              href="#salas"
+              class="botao botao-secundario"
+            >
+              Ver salas do Meet
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao" id="salas">
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span>Apresentação de trabalhos</span>
+          <h2>Salas por área</h2>
+        </div>
+
+        <p class="texto-centralizado">
+          Escolha sua área para acessar a sala correta no Google Meet.
+        </p>
+
+        <div id="listaSalas" class="salas-grid">
+          <!-- As salas serão inseridas pelo JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao secao-submissao" id="submissao">
+      <div class="container">
+
+        <div class="submissao-conteudo">
+
+          <div>
+            <span class="submissao-etiqueta">
+              Produção científica
+            </span>
+
+            <h2>Submeta seu trabalho</h2>
+
+            <p>
+              A submissão, avaliação e publicação dos trabalhos são
+              realizadas por meio da plataforma OJS.
+            </p>
+
+            <p>
+              Antes de enviar, consulte as normas e confira todas as
+              orientações para os autores.
+            </p>
+          </div>
+
+          <div class="submissao-botoes">
+
+            <a
+              href="#"
+              id="botaoNormas"
+              class="botao botao-secundario"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Consultar normas
+            </a>
+
+            <a
+              href="#"
+              id="botaoOjs"
+              class="botao botao-principal"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Submeter pelo OJS
+            </a>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="rodape">
+    <div class="container rodape-conteudo">
+
+      <div>
+        <strong>Jornada Científica</strong>
+
+        <p>
+          Conhecimento, pesquisa e transformação.
+        </p>
+      </div>
+
+      <p>
+        © <span id="anoAtual"></span>
+        Jornada Científica. Todos os direitos reservados.
+      </p>
+
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
