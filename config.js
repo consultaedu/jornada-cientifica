@@ -14,9 +14,9 @@ const CONFIG_EVENTO = {
   },
 
   links: {
-    ojs: "https://SEU-LINK-DO-OJS-AQUI",
-    normas: "https://SEU-LINK-DAS-NORMAS-AQUI",
-    youtube: "https://www.youtube.com/"
+    ojs: "https://revista.grupofaveni.com.br/index.php/jornadacientifica/about/submissions",
+    normas: "https://drive.usercontent.google.com/u/0/uc?id=1jT993IEqNF4sSkXNt_aWR2nkNM8_3ddW&export=download",
+    youtube: "https://www.youtube.com/@grupofaveni"
   },
 
   palestrantes: [
