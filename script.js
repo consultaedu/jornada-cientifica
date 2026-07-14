@@ -482,6 +482,21 @@ function configurarLinks() {
   configurarLink("botaoYoutube", links.youtube);
   configurarLink("botaoOjs", links.ojs);
   configurarLink("botaoNormas", links.normas);
+
+  configurarLink(
+    "botaoModeloResumoWord",
+    links.modeloResumoWord
+  );
+
+  configurarLink(
+    "botaoModeloSlide",
+    links.modeloSlide
+  );
+
+  configurarLink(
+    "botaoModeloEPoster",
+    links.modeloEPoster
+  );
 }
 
 function configurarLink(id, endereco) {
