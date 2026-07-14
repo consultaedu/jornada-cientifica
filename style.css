@@ -1696,3 +1696,112 @@ a {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ==================================================
+   MODO EVENTO INTELIGENTE
+================================================== */
+
+.painel-evento-agora {
+  width: min(100%, 520px);
+  margin-top: 22px;
+  padding: 22px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.045),
+      rgba(0, 0, 0, 0.18)
+    );
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.28);
+}
+
+.painel-evento-agora[hidden] {
+  display: none !important;
+}
+
+.painel-evento-topo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--cor-verde);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.painel-evento-indicador {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow:
+    0 0 16px currentColor;
+}
+
+.painel-evento-agora h2 {
+  margin-top: 12px;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+
+.painel-evento-agora p {
+  margin-top: 10px;
+  color: var(--cor-texto-suave);
+}
+
+.painel-evento-agora .botao {
+  margin-top: 20px;
+}
+
+.modo-ao-vivo {
+  border-color: rgba(255, 41, 83, 0.35);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 23, 68, 0.1),
+      rgba(0, 0, 0, 0.2)
+    );
+}
+
+.modo-ao-vivo .painel-evento-topo {
+  color: #ff365d;
+}
+
+.modo-ao-vivo .painel-evento-indicador {
+  animation:
+    pulsarModoEvento 1.3s ease-in-out infinite;
+}
+
+.modo-intervalo .painel-evento-topo {
+  color: var(--cor-laranja);
+}
+
+.modo-salas {
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.modo-encerrado .painel-evento-topo {
+  color: var(--cor-texto-suave);
+}
+
+.modo-encerrado .painel-evento-indicador {
+  box-shadow: none;
+}
+
+@keyframes pulsarModoEvento {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.65);
+    opacity: 0.45;
+  }
+}

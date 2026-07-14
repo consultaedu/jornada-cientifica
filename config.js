@@ -41,34 +41,86 @@ const CONFIG_EVENTO = {
   ],
 
   programacao: [
-    {
-      data: "10 de novembro",
-      palestra:
-        "Princípios do Direito Ambiental e suas aplicações",
-      horarioPalestra: "19h às 20h",
-      horarioSalas: "20h20"
+  {
+    data: "10 de novembro",
+    dataISO: "2026-11-10",
+
+    palestra:
+      "Princípios do Direito Ambiental e suas aplicações",
+
+    horarioPalestra: "19h às 20h",
+    horarioSalas: "20h20",
+
+    horarios: {
+      inicioPalestra: "19:00",
+      fimPalestra: "20:00",
+      inicioSalas: "20:20",
+      fimDia: "22:00"
     },
-    {
-      data: "11 de novembro",
-      palestra:
-        "Estratégias de mindfulness para tempos de hiperconectividade",
-      horarioPalestra: "19h às 20h",
-      horarioSalas: "20h20"
+
+    youtube: "https://www.youtube.com/"
+  },
+
+  {
+    data: "11 de novembro",
+    dataISO: "2026-11-11",
+
+    palestra:
+      "Estratégias de mindfulness para tempos de hiperconectividade",
+
+    horarioPalestra: "19h às 20h",
+    horarioSalas: "20h20",
+
+    horarios: {
+      inicioPalestra: "19:00",
+      fimPalestra: "20:00",
+      inicioSalas: "20:20",
+      fimDia: "22:00"
     },
-    {
-      data: "12 de novembro",
-      palestra: "Gestão de Riscos e Desastres",
-      horarioPalestra: "19h às 20h",
-      horarioSalas: "20h20"
+
+    youtube: "https://www.youtube.com/"
+  },
+
+  {
+    data: "12 de novembro",
+    dataISO: "2026-11-12",
+
+    palestra:
+      "Gestão de Riscos e Desastres",
+
+    horarioPalestra: "19h às 20h",
+    horarioSalas: "20h20",
+
+    horarios: {
+      inicioPalestra: "19:00",
+      fimPalestra: "20:00",
+      inicioSalas: "20:20",
+      fimDia: "22:00"
     },
-    {
-      data: "13 de novembro",
-      palestra:
-        "Lançamento da edição especial da revista",
-      horarioPalestra: "19h às 20h",
-      horarioSalas: "20h20"
-    }
-  ],
+
+    youtube: "https://www.youtube.com/"
+  },
+
+  {
+    data: "13 de novembro",
+    dataISO: "2026-11-13",
+
+    palestra:
+      "Lançamento da edição especial da revista",
+
+    horarioPalestra: "19h às 20h",
+    horarioSalas: "20h20",
+
+    horarios: {
+      inicioPalestra: "19:00",
+      fimPalestra: "20:00",
+      inicioSalas: "20:20",
+      fimDia: "22:00"
+    },
+
+    youtube: "https://www.youtube.com/"
+  }
+],
 
   diasSalas: [
     {

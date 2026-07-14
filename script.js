@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   configurarLinks();
   atualizarAnoRodape();
   iniciarContagemRegressiva();
+  iniciarModoEvento();
 });
 
 function carregarInformacoesEvento() {
@@ -752,4 +753,229 @@ function mostrarStatusDaJornada(texto, tipo) {
       tipo === "encerrado"
     );
   }
+}
+
+function iniciarModoEvento() {
+  const programacao = CONFIG_EVENTO.programacao;
+
+  if (!Array.isArray(programacao)) {
+    return;
+  }
+
+  function atualizarModoEvento() {
+    const agora = new Date();
+
+    const dataHoje = obterDataLocalISO(agora);
+
+    const eventoHoje = programacao.find(
+      (item) => item.dataISO === dataHoje
+    );
+
+    if (!eventoHoje) {
+      ocultarPainelEventoAgora();
+      return;
+    }
+
+    const horarios = eventoHoje.horarios;
+
+    if (!horarios) {
+      ocultarPainelEventoAgora();
+      return;
+    }
+
+    const inicioPalestra = criarDataHorario(
+      eventoHoje.dataISO,
+      horarios.inicioPalestra
+    );
+
+    const fimPalestra = criarDataHorario(
+      eventoHoje.dataISO,
+      horarios.fimPalestra
+    );
+
+    const inicioSalas = criarDataHorario(
+      eventoHoje.dataISO,
+      horarios.inicioSalas
+    );
+
+    const fimDia = criarDataHorario(
+      eventoHoje.dataISO,
+      horarios.fimDia
+    );
+
+    if (agora < inicioPalestra) {
+      mostrarPainelEvento({
+        tipo: "aguardando",
+        etiqueta: "Programação de hoje",
+        titulo: `Hoje: ${eventoHoje.palestra}`,
+        descricao:
+          `A transmissão começa às ${horarios.inicioPalestra}.`,
+        botaoTexto: "Ver programação",
+        botaoLink: "#programacao"
+      });
+
+      return;
+    }
+
+    if (agora >= inicioPalestra && agora < fimPalestra) {
+      mostrarPainelEvento({
+        tipo: "ao-vivo",
+        etiqueta: "Ao vivo agora",
+        titulo: eventoHoje.palestra,
+        descricao:
+          "Acompanhe a palestra principal pelo YouTube.",
+        botaoTexto: "Assistir no YouTube",
+        botaoLink: eventoHoje.youtube,
+        novaAba: true
+      });
+
+      return;
+    }
+
+    if (agora >= fimPalestra && agora < inicioSalas) {
+      mostrarPainelEvento({
+        tipo: "intervalo",
+        etiqueta: "Intervalo",
+        titulo: "As apresentações começam em breve",
+        descricao:
+          `As salas serão abertas às ${horarios.inicioSalas}.`,
+        botaoTexto: "Ver salas",
+        botaoLink: "#salas"
+      });
+
+      return;
+    }
+
+    if (agora >= inicioSalas && agora <= fimDia) {
+      mostrarPainelEvento({
+        tipo: "salas",
+        etiqueta: "Salas abertas",
+        titulo: "Apresentação dos trabalhos",
+        descricao:
+          "Escolha a área do conhecimento e entre na sala correta.",
+        botaoTexto: "Acessar salas",
+        botaoLink: "#salas"
+      });
+
+      return;
+    }
+
+    mostrarPainelEvento({
+      tipo: "encerrado",
+      etiqueta: "Atividades encerradas",
+      titulo: "Obrigado pela participação",
+      descricao:
+        dataHoje === "2026-11-13"
+          ? "A 6ª Jornada Científica chegou ao fim."
+          : "Confira a programação do próximo dia.",
+      botaoTexto: "Ver programação",
+      botaoLink: "#programacao"
+    });
+  }
+
+  atualizarModoEvento();
+
+  window.setInterval(
+    atualizarModoEvento,
+    30000
+  );
+}
+
+function mostrarPainelEvento({
+  tipo,
+  etiqueta,
+  titulo,
+  descricao,
+  botaoTexto,
+  botaoLink,
+  novaAba = false
+}) {
+  const painel = document.getElementById(
+    "painelEventoAgora"
+  );
+
+  const elementoEtiqueta = document.getElementById(
+    "painelEventoEtiqueta"
+  );
+
+  const elementoTitulo = document.getElementById(
+    "painelEventoTitulo"
+  );
+
+  const elementoDescricao = document.getElementById(
+    "painelEventoDescricao"
+  );
+
+  const botao = document.getElementById(
+    "painelEventoBotao"
+  );
+
+  if (!painel) {
+    return;
+  }
+
+  painel.hidden = false;
+
+  painel.classList.remove(
+    "modo-aguardando",
+    "modo-ao-vivo",
+    "modo-intervalo",
+    "modo-salas",
+    "modo-encerrado"
+  );
+
+  painel.classList.add(`modo-${tipo}`);
+
+  if (elementoEtiqueta) {
+    elementoEtiqueta.textContent = etiqueta;
+  }
+
+  if (elementoTitulo) {
+    elementoTitulo.textContent = titulo;
+  }
+
+  if (elementoDescricao) {
+    elementoDescricao.textContent = descricao;
+  }
+
+  if (botao) {
+    botao.textContent = botaoTexto;
+    botao.href = botaoLink || "#";
+
+    if (novaAba) {
+      botao.target = "_blank";
+      botao.rel = "noopener noreferrer";
+    } else {
+      botao.removeAttribute("target");
+      botao.removeAttribute("rel");
+    }
+  }
+}
+
+function ocultarPainelEventoAgora() {
+  const painel = document.getElementById(
+    "painelEventoAgora"
+  );
+
+  if (painel) {
+    painel.hidden = true;
+  }
+}
+
+function criarDataHorario(dataISO, horario) {
+  return new Date(`${dataISO}T${horario}:00-03:00`);
+}
+
+function obterDataLocalISO(data) {
+  const ano = data.getFullYear();
+
+  const mes = String(
+    data.getMonth() + 1
+  ).padStart(2, "0");
+
+  const dia = String(
+    data.getDate()
+  ).padStart(2, "0");
+
+  return `${ano}-${mes}-${dia}`;
 }
