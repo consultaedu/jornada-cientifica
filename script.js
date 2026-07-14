@@ -1,14 +1,34 @@
+"use strict";
+
+/* ==================================================
+   CONFIGURAÇÕES INTERNAS
+================================================== */
+
+const FUSO_EVENTO = "America/Sao_Paulo";
+const INTERVALO_RELOGIO = 1000;
+
+let intervaloRelogioSite = null;
+
+/* ==================================================
+   INICIALIZAÇÃO
+================================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
   carregarInformacoesEvento();
   carregarProgramacao();
   carregarPalestrantes();
   carregarSalasPorDia();
+
   configurarMenu();
   configurarLinks();
   atualizarAnoRodape();
-  iniciarContagemRegressiva();
-  iniciarModoEvento();
+
+  iniciarRelogioSite();
 });
+
+/* ==================================================
+   INFORMAÇÕES PRINCIPAIS
+================================================== */
 
 function carregarInformacoesEvento() {
   definirTexto("eventoEdicao", CONFIG_EVENTO.edicao);
@@ -17,111 +37,152 @@ function carregarInformacoesEvento() {
   definirTexto("eventoData", CONFIG_EVENTO.periodo);
 }
 
+/* ==================================================
+   PROGRAMAÇÃO
+================================================== */
+
 function carregarProgramacao() {
-  const lista = document.getElementById("listaProgramacao");
+  const lista = obterElemento("listaProgramacao");
+  const programacao = CONFIG_EVENTO.programacao;
 
   if (!lista) {
     return;
   }
 
-  lista.innerHTML = CONFIG_EVENTO.programacao
-    .map((item) => {
-      return `
-        <article class="programacao-card">
-          <span class="programacao-data">
-            ${escaparHTML(item.data)}
-          </span>
+  if (
+    !Array.isArray(programacao) ||
+    programacao.length === 0
+  ) {
+    lista.innerHTML = `
+      <div class="salas-vazio">
+        A programação será divulgada em breve.
+      </div>
+    `;
 
-          <div class="programacao-item">
-            <span>
-              ${escaparHTML(item.horarioPalestra)}
-            </span>
+    return;
+  }
 
-            <h3>
-              ${escaparHTML(item.palestra)}
-            </h3>
-
-            <p>
-              Transmissão ao vivo pelo YouTube
-            </p>
-          </div>
-
-          <div class="programacao-item">
-            <span>
-              ${escaparHTML(item.horarioSalas)}
-            </span>
-
-            <h3>
-              Apresentação de trabalhos
-            </h3>
-
-            <p>
-              Salas divididas por áreas no Google Meet
-            </p>
-          </div>
-        </article>
-      `;
-    })
+  lista.innerHTML = programacao
+    .map((item) => criarCardProgramacao(item))
     .join("");
 }
+
+function criarCardProgramacao(item) {
+  return `
+    <article class="programacao-card">
+      <span class="programacao-data">
+        ${escaparHTML(item.data)}
+      </span>
+
+      <div class="programacao-item">
+        <span>
+          ${escaparHTML(item.horarioPalestra)}
+        </span>
+
+        <h3>
+          ${escaparHTML(item.palestra)}
+        </h3>
+
+        <p>
+          Transmissão ao vivo pelo YouTube
+        </p>
+      </div>
+
+      <div class="programacao-item">
+        <span>
+          ${escaparHTML(item.horarioSalas)}
+        </span>
+
+        <h3>
+          Apresentação de trabalhos
+        </h3>
+
+        <p>
+          Salas divididas por áreas no Google Meet
+        </p>
+      </div>
+    </article>
+  `;
+}
+
+/* ==================================================
+   PALESTRANTES
+================================================== */
 
 function carregarPalestrantes() {
-  const lista = document.getElementById("listaPalestrantes");
+  const lista = obterElemento("listaPalestrantes");
+  const palestrantes = CONFIG_EVENTO.palestrantes;
 
   if (!lista) {
     return;
   }
 
-  lista.innerHTML = CONFIG_EVENTO.palestrantes
-    .map((palestrante) => {
-      const nome = escaparHTML(palestrante.nome);
-      const descricao = escaparHTML(palestrante.descricao);
-      const data = escaparHTML(palestrante.data);
+  if (
+    !Array.isArray(palestrantes) ||
+    palestrantes.length === 0
+  ) {
+    lista.innerHTML = `
+      <div class="salas-vazio">
+        Os palestrantes serão divulgados em breve.
+      </div>
+    `;
 
-      const imagem = palestrante.foto
-        ? `
-          <img
-            src="${escaparAtributo(palestrante.foto)}"
-            alt="Foto de ${nome}"
-            loading="lazy"
-          >
-        `
-        : `
-          <div class="palestrante-sem-foto">
-            ${obterIniciais(palestrante.nome)}
-          </div>
-        `;
+    return;
+  }
 
-      return `
-        <article class="palestrante-card">
-
-          <div class="palestrante-foto">
-            ${imagem}
-          </div>
-
-          <div class="palestrante-informacoes">
-            <span>${data}</span>
-
-            <h3>${nome}</h3>
-
-            <p>${descricao}</p>
-          </div>
-
-        </article>
-      `;
-    })
+  lista.innerHTML = palestrantes
+    .map((palestrante) => criarCardPalestrante(palestrante))
     .join("");
 }
 
+function criarCardPalestrante(palestrante) {
+  const nome = escaparHTML(palestrante.nome);
+  const descricao = escaparHTML(palestrante.descricao);
+  const data = escaparHTML(palestrante.data);
+
+  const imagem = palestrante.foto
+    ? `
+      <img
+        src="${escaparAtributo(palestrante.foto)}"
+        alt="Foto de ${nome}"
+        loading="lazy"
+      >
+    `
+    : `
+      <div class="palestrante-sem-foto">
+        ${obterIniciais(palestrante.nome)}
+      </div>
+    `;
+
+  return `
+    <article class="palestrante-card">
+      <div class="palestrante-foto">
+        ${imagem}
+      </div>
+
+      <div class="palestrante-informacoes">
+        <span>${data}</span>
+
+        <h3>${nome}</h3>
+
+        <p>${descricao}</p>
+      </div>
+    </article>
+  `;
+}
+
+/* ==================================================
+   SALAS POR DIA
+================================================== */
+
 function carregarSalasPorDia() {
-  const seletor = document.getElementById("seletorDiasSalas");
-  const lista = document.getElementById("listaSalas");
+  const seletor = obterElemento("seletorDiasSalas");
+  const lista = obterElemento("listaSalas");
+  const dias = CONFIG_EVENTO.diasSalas;
 
   if (!seletor || !lista) {
     return;
   }
-
-  const dias = CONFIG_EVENTO.diasSalas;
 
   if (!Array.isArray(dias) || dias.length === 0) {
     lista.innerHTML = `
@@ -134,25 +195,7 @@ function carregarSalasPorDia() {
   }
 
   seletor.innerHTML = dias
-    .map((dia, indice) => {
-      return `
-        <button
-          type="button"
-          class="botao-dia-sala ${indice === 0 ? "ativo" : ""}"
-          data-dia="${escaparAtributo(dia.id)}"
-          role="tab"
-          aria-selected="${indice === 0 ? "true" : "false"}"
-        >
-          <strong>
-            ${escaparHTML(dia.dataCurta)}
-          </strong>
-
-          <span>
-            ${escaparHTML(dia.descricao)}
-          </span>
-        </button>
-      `;
-    })
+    .map((dia, indice) => criarBotaoDia(dia, indice))
     .join("");
 
   seletor
@@ -163,15 +206,44 @@ function carregarSalasPorDia() {
       });
     });
 
-  const diaInicial = encontrarDiaAtual(dias) || dias[0];
+  const diaAtual = encontrarDiaAtual(dias);
+  const diaInicial = diaAtual || dias[0];
 
   selecionarDiaSalas(diaInicial.id);
+}
+
+function criarBotaoDia(dia, indice) {
+  const ativo = indice === 0;
+
+  return `
+    <button
+      type="button"
+      class="botao-dia-sala ${ativo ? "ativo" : ""}"
+      data-dia="${escaparAtributo(dia.id)}"
+      role="tab"
+      aria-selected="${ativo}"
+    >
+      <strong>
+        ${escaparHTML(dia.dataCurta)}
+      </strong>
+
+      <span>
+        ${escaparHTML(dia.descricao)}
+      </span>
+    </button>
+  `;
 }
 
 function selecionarDiaSalas(idDia) {
   const dias = CONFIG_EVENTO.diasSalas;
 
-  const diaSelecionado = dias.find((dia) => dia.id === idDia);
+  if (!Array.isArray(dias)) {
+    return;
+  }
+
+  const diaSelecionado = dias.find(
+    (dia) => dia.id === idDia
+  );
 
   if (!diaSelecionado) {
     return;
@@ -183,11 +255,7 @@ function selecionarDiaSalas(idDia) {
       const ativo = botao.dataset.dia === idDia;
 
       botao.classList.toggle("ativo", ativo);
-
-      botao.setAttribute(
-        "aria-selected",
-        String(ativo)
-      );
+      botao.setAttribute("aria-selected", String(ativo));
     });
 
   definirTexto(
@@ -204,13 +272,16 @@ function selecionarDiaSalas(idDia) {
 }
 
 function renderizarAreasSalas(dia) {
-  const lista = document.getElementById("listaSalas");
+  const lista = obterElemento("listaSalas");
 
   if (!lista) {
     return;
   }
 
-  if (!Array.isArray(dia.areas) || dia.areas.length === 0) {
+  if (
+    !Array.isArray(dia.areas) ||
+    dia.areas.length === 0
+  ) {
     lista.innerHTML = `
       <div class="salas-vazio">
         Nenhuma sala cadastrada para este dia.
@@ -221,54 +292,51 @@ function renderizarAreasSalas(dia) {
   }
 
   lista.innerHTML = dia.areas
-    .map((area) => {
-      const salas = Array.isArray(area.salas)
-        ? area.salas
-        : [];
-
-      const quantidade = salas.length;
-
-      const textoQuantidade =
-        quantidade === 1
-          ? "1 sala disponível"
-          : `${quantidade} salas disponíveis`;
-
-      const cardsSalas = salas
-        .map((sala) => criarCardSala(sala))
-        .join("");
-
-      return `
-        <section class="grupo-area">
-
-          <div class="grupo-area-cabecalho">
-            <div>
-              <span>Área do conhecimento</span>
-
-              <h4>
-                ${escaparHTML(area.nome)}
-              </h4>
-            </div>
-
-            <span class="quantidade-salas">
-              ${textoQuantidade}
-            </span>
-          </div>
-
-          <div class="salas-area-grid">
-            ${cardsSalas}
-          </div>
-
-        </section>
-      `;
-    })
+    .map((area) => criarGrupoArea(area))
     .join("");
 }
 
+function criarGrupoArea(area) {
+  const salas = Array.isArray(area.salas)
+    ? area.salas
+    : [];
+
+  const quantidade = salas.length;
+
+  const textoQuantidade =
+    quantidade === 1
+      ? "1 sala disponível"
+      : `${quantidade} salas disponíveis`;
+
+  const cardsSalas = salas
+    .map((sala) => criarCardSala(sala))
+    .join("");
+
+  return `
+    <section class="grupo-area">
+      <div class="grupo-area-cabecalho">
+        <div>
+          <span>Área do conhecimento</span>
+
+          <h4>
+            ${escaparHTML(area.nome)}
+          </h4>
+        </div>
+
+        <span class="quantidade-salas">
+          ${textoQuantidade}
+        </span>
+      </div>
+
+      <div class="salas-area-grid">
+        ${cardsSalas}
+      </div>
+    </section>
+  `;
+}
+
 function criarCardSala(sala) {
-  const linkValido =
-    sala.link &&
-    sala.link !== "#" &&
-    sala.link.trim() !== "";
+  const linkValido = verificarLinkValido(sala.link);
 
   const complemento = sala.complemento
     ? `
@@ -297,7 +365,6 @@ function criarCardSala(sala) {
 
   return `
     <article class="sala-card-novo">
-
       <div class="sala-card-topo">
         <span class="icone-meet" aria-hidden="true">
           M
@@ -309,7 +376,6 @@ function criarCardSala(sala) {
       </div>
 
       <div class="sala-card-conteudo">
-
         <span class="sala-numero">
           ${escaparHTML(sala.numero)}
         </span>
@@ -323,52 +389,43 @@ function criarCardSala(sala) {
             ${escaparHTML(sala.mediador)}
           </strong>
         </div>
-
       </div>
 
       ${botaoSala}
-
     </article>
   `;
 }
 
 function encontrarDiaAtual(dias) {
-  const hoje = new Date();
+  const programacao = CONFIG_EVENTO.programacao;
 
-  const diaHoje = hoje.getDate();
-  const mesHoje = hoje.getMonth();
-
-  if (mesHoje !== 10) {
+  if (
+    !Array.isArray(programacao) ||
+    !Array.isArray(dias)
+  ) {
     return null;
   }
 
-  return dias.find((dia) => {
-    const numeroData = Number.parseInt(dia.data, 10);
+  const dataHoje = obterDataEventoISO(new Date());
 
-    return numeroData === diaHoje;
-  });
+  const indiceDia = programacao.findIndex(
+    (item) => item.dataISO === dataHoje
+  );
+
+  if (indiceDia < 0) {
+    return null;
+  }
+
+  return dias[indiceDia] || null;
 }
 
-function configurarLinks() {
-  configurarLink(
-    "botaoYoutube",
-    CONFIG_EVENTO.links.youtube
-  );
-
-  configurarLink(
-    "botaoOjs",
-    CONFIG_EVENTO.links.ojs
-  );
-
-  configurarLink(
-    "botaoNormas",
-    CONFIG_EVENTO.links.normas
-  );
-}
+/* ==================================================
+   MENU
+================================================== */
 
 function configurarMenu() {
-  const botaoMenu = document.getElementById("botaoMenu");
-  const menu = document.getElementById("menuPrincipal");
+  const botaoMenu = obterElemento("botaoMenu");
+  const menu = obterElemento("menuPrincipal");
 
   if (!botaoMenu || !menu) {
     return;
@@ -381,104 +438,151 @@ function configurarMenu() {
       "aria-expanded",
       String(menuAberto)
     );
+
+    botaoMenu.setAttribute(
+      "aria-label",
+      menuAberto ? "Fechar menu" : "Abrir menu"
+    );
   });
 
   menu.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", () => {
-      menu.classList.remove("menu-aberto");
-
-      botaoMenu.setAttribute(
-        "aria-expanded",
-        "false"
-      );
+      fecharMenu(menu, botaoMenu);
     });
+  });
+
+  document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+      fecharMenu(menu, botaoMenu);
+    }
   });
 }
 
-function atualizarAnoRodape() {
-  const elementoAno = document.getElementById("anoAtual");
+function fecharMenu(menu, botaoMenu) {
+  menu.classList.remove("menu-aberto");
 
-  if (elementoAno) {
-    elementoAno.textContent = new Date().getFullYear();
-  }
+  botaoMenu.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+  botaoMenu.setAttribute(
+    "aria-label",
+    "Abrir menu"
+  );
+}
+
+/* ==================================================
+   LINKS
+================================================== */
+
+function configurarLinks() {
+  const links = CONFIG_EVENTO.links || {};
+
+  configurarLink("botaoYoutube", links.youtube);
+  configurarLink("botaoOjs", links.ojs);
+  configurarLink("botaoNormas", links.normas);
 }
 
 function configurarLink(id, endereco) {
-  const elemento = document.getElementById(id);
+  const elemento = obterElemento(id);
 
   if (!elemento) {
     return;
   }
 
-  elemento.href = endereco || "#";
+  if (!verificarLinkValido(endereco)) {
+    elemento.href = "#";
+    elemento.setAttribute("aria-disabled", "true");
+    return;
+  }
+
+  elemento.href = endereco;
+  elemento.removeAttribute("aria-disabled");
 }
 
-function definirTexto(id, texto) {
-  const elemento = document.getElementById(id);
+function verificarLinkValido(endereco) {
+  return Boolean(
+    typeof endereco === "string" &&
+    endereco.trim() !== "" &&
+    endereco.trim() !== "#" &&
+    !endereco.includes("SEU-LINK")
+  );
+}
 
-  if (elemento) {
-    elemento.textContent = texto;
+/* ==================================================
+   RELÓGIO CENTRAL DO SITE
+================================================== */
+
+function iniciarRelogioSite() {
+  pararRelogioSite();
+  atualizarRecursosTemporais();
+
+  intervaloRelogioSite = window.setInterval(
+    atualizarRecursosTemporais,
+    INTERVALO_RELOGIO
+  );
+}
+
+function pararRelogioSite() {
+  if (intervaloRelogioSite !== null) {
+    window.clearInterval(intervaloRelogioSite);
+    intervaloRelogioSite = null;
   }
 }
 
-function obterIniciais(nome) {
-  return nome
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((parte) => parte.charAt(0))
-    .join("")
-    .toUpperCase();
+function atualizarRecursosTemporais() {
+  const agora = new Date();
+
+  atualizarContagemRegressiva(agora);
+  atualizarModoEvento(agora);
 }
 
-function iniciarContagemRegressiva() {
-  const configuracaoDatas = CONFIG_EVENTO.datasEvento;
+/* ==================================================
+   CONTAGEM REGRESSIVA
+================================================== */
 
-  if (!configuracaoDatas) {
+function atualizarContagemRegressiva(agora) {
+  const datas = CONFIG_EVENTO.datasEvento;
+
+  if (!datas?.inicio || !datas?.fim) {
     ocultarContagemEvento();
     return;
   }
 
-  const inicio = new Date(configuracaoDatas.inicio);
-  const fim = new Date(configuracaoDatas.fim);
+  const inicio = new Date(datas.inicio);
+  const fim = new Date(datas.fim);
 
   if (
     Number.isNaN(inicio.getTime()) ||
     Number.isNaN(fim.getTime())
   ) {
     console.error(
-      "As datas do evento no config.js são inválidas."
+      "As datas do evento configuradas no config.js são inválidas."
     );
 
     ocultarContagemEvento();
     return;
   }
 
-  function atualizarContagem() {
-    const agora = new Date();
-
-    if (agora < inicio) {
-      mostrarContagemAntesDoEvento(inicio, agora);
-      return;
-    }
-
-    if (agora <= fim) {
-      mostrarStatusEvento(
-        "Evento em andamento",
-        "ao-vivo"
-      );
-      return;
-    }
-
-    mostrarStatusEvento(
-      "Evento encerrado",
-      "encerrado"
-    );
+  if (agora < inicio) {
+    mostrarContagemAntesDoEvento(inicio, agora);
+    return;
   }
 
-  atualizarContagem();
+  if (agora <= fim) {
+    mostrarStatusDaJornada(
+      "Jornada acontecendo agora",
+      "ao-vivo"
+    );
 
-  window.setInterval(atualizarContagem, 1000);
+    return;
+  }
+
+  mostrarStatusDaJornada(
+    "Esta edição foi encerrada",
+    "encerrado"
+  );
 }
 
 function mostrarContagemAntesDoEvento(inicio, agora) {
@@ -503,196 +607,26 @@ function mostrarContagemAntesDoEvento(inicio, agora) {
     (diferenca % minuto) / segundo
   );
 
-  definirTexto(
-    "contadorDias",
-    formatarNumeroContagem(dias)
-  );
+  atualizarContador("contadorDias", dias);
+  atualizarContador("contadorHoras", horas);
+  atualizarContador("contadorMinutos", minutos);
+  atualizarContador("contadorSegundos", segundos);
 
-  definirTexto(
-    "contadorHoras",
-    formatarNumeroContagem(horas)
-  );
-
-  definirTexto(
-    "contadorMinutos",
-    formatarNumeroContagem(minutos)
-  );
-
-  definirTexto(
-    "contadorSegundos",
-    formatarNumeroContagem(segundos)
-  );
-
-  const grade = document.getElementById("contagemGrid");
-  const status = document.getElementById("statusEvento");
-  const etiqueta = document.getElementById("contagemEtiqueta");
-  const container = document.getElementById("contagemEvento");
-
-  if (grade) {
-    grade.hidden = false;
-  }
-
-  if (status) {
-    status.hidden = true;
-  }
-
-  if (etiqueta) {
-    etiqueta.hidden = false;
-    etiqueta.textContent = "Faltam";
-  }
-
-  if (container) {
-    container.classList.remove(
-      "evento-ao-vivo",
-      "evento-encerrado"
-    );
-  }
-}
-
-function mostrarStatusEvento(texto, tipo) {
-  const grade = document.getElementById("contagemGrid");
-  const status = document.getElementById("statusEvento");
-  const etiqueta = document.getElementById("contagemEtiqueta");
-  const statusTexto = document.getElementById(
-    "statusEventoTexto"
-  );
-  const container = document.getElementById("contagemEvento");
-
-  if (grade) {
-    grade.hidden = true;
-  }
-
-  if (etiqueta) {
-    etiqueta.hidden = true;
-  }
-
-  if (status) {
-    status.hidden = false;
-  }
-
-  if (statusTexto) {
-    statusTexto.textContent = texto;
-  }
-
-  if (container) {
-    container.classList.toggle(
-      "evento-ao-vivo",
-      tipo === "ao-vivo"
-    );
-
-    container.classList.toggle(
-      "evento-encerrado",
-      tipo === "encerrado"
-    );
-  }
-}
-
-function formatarNumeroContagem(numero) {
-  return String(Math.max(0, numero)).padStart(2, "0");
-}
-
-function ocultarContagemEvento() {
-  const contagem = document.getElementById("contagemEvento");
-
-  if (contagem) {
-    contagem.hidden = true;
-  }
-}
-
-function escaparHTML(valor) {
-  return String(valor ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function escaparAtributo(valor) {
-  return escaparHTML(valor);
-}
-
-function iniciarContagemRegressiva() {
-  const datas = CONFIG_EVENTO.datasEvento;
-
-  if (!datas?.inicio || !datas?.fim) {
-    console.error("datasEvento não foi configurado no config.js.");
-    return;
-  }
-
-  const inicio = new Date(datas.inicio);
-  const fim = new Date(datas.fim);
-
-  if (
-    Number.isNaN(inicio.getTime()) ||
-    Number.isNaN(fim.getTime())
-  ) {
-    console.error("As datas da Jornada são inválidas.");
-    return;
-  }
-
-  const atualizar = () => {
-    const agora = new Date();
-
-    if (agora < inicio) {
-      const diferenca = inicio.getTime() - agora.getTime();
-
-      const dias = Math.floor(
-        diferenca / (1000 * 60 * 60 * 24)
-      );
-
-      const horas = Math.floor(
-        (diferenca / (1000 * 60 * 60)) % 24
-      );
-
-      const minutos = Math.floor(
-        (diferenca / (1000 * 60)) % 60
-      );
-
-      const segundos = Math.floor(
-        (diferenca / 1000) % 60
-      );
-
-      atualizarContador("contadorDias", dias);
-      atualizarContador("contadorHoras", horas);
-      atualizarContador("contadorMinutos", minutos);
-      atualizarContador("contadorSegundos", segundos);
-
-      alternarExibicaoContagem(true);
-      return;
-    }
-
-    if (agora <= fim) {
-      mostrarStatusDaJornada(
-        "Jornada acontecendo agora",
-        "ao-vivo"
-      );
-      return;
-    }
-
-    mostrarStatusDaJornada(
-      "Esta edição foi encerrada",
-      "encerrado"
-    );
-  };
-
-  atualizar();
-  window.setInterval(atualizar, 1000);
+  alternarExibicaoContagem(true);
 }
 
 function atualizarContador(id, valor) {
-  const elemento = document.getElementById(id);
-
-  if (elemento) {
-    elemento.textContent = String(valor).padStart(2, "0");
-  }
+  definirTexto(
+    id,
+    formatarNumeroContagem(valor)
+  );
 }
 
 function alternarExibicaoContagem(mostrarContagem) {
-  const grade = document.getElementById("contagemGrid");
-  const status = document.getElementById("statusEvento");
-  const etiqueta = document.getElementById("contagemEtiqueta");
-  const container = document.getElementById("contagemEvento");
+  const grade = obterElemento("contagemGrid");
+  const status = obterElemento("statusEvento");
+  const etiqueta = obterElemento("contagemEtiqueta");
+  const container = obterElemento("contagemEvento");
 
   if (grade) {
     grade.hidden = !mostrarContagem;
@@ -703,10 +637,13 @@ function alternarExibicaoContagem(mostrarContagem) {
   }
 
   if (etiqueta) {
+    etiqueta.hidden = false;
     etiqueta.textContent = "Contagem regressiva";
   }
 
   if (container) {
+    container.hidden = false;
+
     container.classList.remove(
       "evento-ao-vivo",
       "evento-encerrado"
@@ -715,13 +652,11 @@ function alternarExibicaoContagem(mostrarContagem) {
 }
 
 function mostrarStatusDaJornada(texto, tipo) {
-  const grade = document.getElementById("contagemGrid");
-  const status = document.getElementById("statusEvento");
-  const textoStatus = document.getElementById(
-    "statusEventoTexto"
-  );
-  const etiqueta = document.getElementById("contagemEtiqueta");
-  const container = document.getElementById("contagemEvento");
+  const grade = obterElemento("contagemGrid");
+  const status = obterElemento("statusEvento");
+  const textoStatus = obterElemento("statusEventoTexto");
+  const etiqueta = obterElemento("contagemEtiqueta");
+  const container = obterElemento("contagemEvento");
 
   if (grade) {
     grade.hidden = true;
@@ -736,6 +671,8 @@ function mostrarStatusDaJornada(texto, tipo) {
   }
 
   if (etiqueta) {
+    etiqueta.hidden = false;
+
     etiqueta.textContent =
       tipo === "ao-vivo"
         ? "Acompanhe a programação"
@@ -743,6 +680,8 @@ function mostrarStatusDaJornada(texto, tipo) {
   }
 
   if (container) {
+    container.hidden = false;
+
     container.classList.toggle(
       "evento-ao-vivo",
       tipo === "ao-vivo"
@@ -755,130 +694,169 @@ function mostrarStatusDaJornada(texto, tipo) {
   }
 }
 
-function iniciarModoEvento() {
+function ocultarContagemEvento() {
+  const contagem = obterElemento("contagemEvento");
+
+  if (contagem) {
+    contagem.hidden = true;
+  }
+}
+
+function formatarNumeroContagem(numero) {
+  const valorSeguro = Math.max(0, Number(numero) || 0);
+
+  return String(valorSeguro).padStart(2, "0");
+}
+
+/* ==================================================
+   MODO EVENTO INTELIGENTE
+================================================== */
+
+function atualizarModoEvento(agora) {
   const programacao = CONFIG_EVENTO.programacao;
 
-  if (!Array.isArray(programacao)) {
+  if (
+    !Array.isArray(programacao) ||
+    programacao.length === 0
+  ) {
+    ocultarPainelEventoAgora();
     return;
   }
 
-  function atualizarModoEvento() {
-    const agora = new Date();
+  const dataHoje = obterDataEventoISO(agora);
 
-    const dataHoje = obterDataLocalISO(agora);
+  const eventoHoje = programacao.find(
+    (item) => item.dataISO === dataHoje
+  );
 
-    const eventoHoje = programacao.find(
-      (item) => item.dataISO === dataHoje
-    );
+  if (!eventoHoje?.horarios) {
+    ocultarPainelEventoAgora();
+    return;
+  }
 
-    if (!eventoHoje) {
-      ocultarPainelEventoAgora();
-      return;
-    }
+  const fase = calcularFaseEvento(
+    agora,
+    eventoHoje
+  );
 
-    const horarios = eventoHoje.horarios;
+  renderizarFaseEvento(
+    fase,
+    eventoHoje,
+    dataHoje
+  );
+}
 
-    if (!horarios) {
-      ocultarPainelEventoAgora();
-      return;
-    }
+function calcularFaseEvento(agora, eventoHoje) {
+  const horarios = eventoHoje.horarios;
 
-    const inicioPalestra = criarDataHorario(
-      eventoHoje.dataISO,
-      horarios.inicioPalestra
-    );
+  const inicioPalestra = criarDataHorario(
+    eventoHoje.dataISO,
+    horarios.inicioPalestra
+  );
 
-    const fimPalestra = criarDataHorario(
-      eventoHoje.dataISO,
-      horarios.fimPalestra
-    );
+  const fimPalestra = criarDataHorario(
+    eventoHoje.dataISO,
+    horarios.fimPalestra
+  );
 
-    const inicioSalas = criarDataHorario(
-      eventoHoje.dataISO,
-      horarios.inicioSalas
-    );
+  const inicioSalas = criarDataHorario(
+    eventoHoje.dataISO,
+    horarios.inicioSalas
+  );
 
-    const fimDia = criarDataHorario(
-      eventoHoje.dataISO,
-      horarios.fimDia
-    );
+  const fimDia = criarDataHorario(
+    eventoHoje.dataISO,
+    horarios.fimDia
+  );
 
-    if (agora < inicioPalestra) {
-      mostrarPainelEvento({
-        tipo: "aguardando",
-        etiqueta: "Programação de hoje",
-        titulo: `Hoje: ${eventoHoje.palestra}`,
-        descricao:
-          `A transmissão começa às ${horarios.inicioPalestra}.`,
-        botaoTexto: "Ver programação",
-        botaoLink: "#programacao"
-      });
+  if (agora < inicioPalestra) {
+    return "aguardando";
+  }
 
-      return;
-    }
+  if (agora < fimPalestra) {
+    return "ao-vivo";
+  }
 
-    if (agora >= inicioPalestra && agora < fimPalestra) {
-      mostrarPainelEvento({
-        tipo: "ao-vivo",
-        etiqueta: "Ao vivo agora",
-        titulo: eventoHoje.palestra,
-        descricao:
-          "Acompanhe a palestra principal pelo YouTube.",
-        botaoTexto: "Assistir no YouTube",
-        botaoLink: eventoHoje.youtube,
-        novaAba: true
-      });
+  if (agora < inicioSalas) {
+    return "intervalo";
+  }
 
-      return;
-    }
+  if (agora <= fimDia) {
+    return "salas";
+  }
 
-    if (agora >= fimPalestra && agora < inicioSalas) {
-      mostrarPainelEvento({
-        tipo: "intervalo",
-        etiqueta: "Intervalo",
-        titulo: "As apresentações começam em breve",
-        descricao:
-          `As salas serão abertas às ${horarios.inicioSalas}.`,
-        botaoTexto: "Ver salas",
-        botaoLink: "#salas"
-      });
+  return "encerrado";
+}
 
-      return;
-    }
+function renderizarFaseEvento(
+  fase,
+  eventoHoje,
+  dataHoje
+) {
+  const horarios = eventoHoje.horarios;
 
-    if (agora >= inicioSalas && agora <= fimDia) {
-      mostrarPainelEvento({
-        tipo: "salas",
-        etiqueta: "Salas abertas",
-        titulo: "Apresentação dos trabalhos",
-        descricao:
-          "Escolha a área do conhecimento e entre na sala correta.",
-        botaoTexto: "Acessar salas",
-        botaoLink: "#salas"
-      });
+  const estados = {
+    aguardando: {
+      tipo: "aguardando",
+      etiqueta: "Programação de hoje",
+      titulo: `Hoje: ${eventoHoje.palestra}`,
+      descricao:
+        `A transmissão começa às ${horarios.inicioPalestra}.`,
+      botaoTexto: "Ver programação",
+      botaoLink: "#programacao"
+    },
 
-      return;
-    }
+    "ao-vivo": {
+      tipo: "ao-vivo",
+      etiqueta: "Ao vivo agora",
+      titulo: eventoHoje.palestra,
+      descricao:
+        "Acompanhe a palestra principal pelo YouTube.",
+      botaoTexto: "Assistir no YouTube",
+      botaoLink: eventoHoje.youtube,
+      novaAba: true
+    },
 
-    mostrarPainelEvento({
+    intervalo: {
+      tipo: "intervalo",
+      etiqueta: "Intervalo",
+      titulo: "As apresentações começam em breve",
+      descricao:
+        `As salas serão abertas às ${horarios.inicioSalas}.`,
+      botaoTexto: "Ver salas",
+      botaoLink: "#salas"
+    },
+
+    salas: {
+      tipo: "salas",
+      etiqueta: "Salas abertas",
+      titulo: "Apresentação dos trabalhos",
+      descricao:
+        "Escolha a área do conhecimento e entre na sala correta.",
+      botaoTexto: "Acessar salas",
+      botaoLink: "#salas"
+    },
+
+    encerrado: {
       tipo: "encerrado",
       etiqueta: "Atividades encerradas",
       titulo: "Obrigado pela participação",
-      descricao:
-        dataHoje === "2026-11-13"
-          ? "A 6ª Jornada Científica chegou ao fim."
-          : "Confira a programação do próximo dia.",
+      descricao: verificarUltimoDia(dataHoje)
+        ? `${CONFIG_EVENTO.edicao} chegou ao fim.`
+        : "Confira a programação do próximo dia.",
       botaoTexto: "Ver programação",
       botaoLink: "#programacao"
-    });
+    }
+  };
+
+  const estado = estados[fase];
+
+  if (!estado) {
+    ocultarPainelEventoAgora();
+    return;
   }
 
-  atualizarModoEvento();
-
-  window.setInterval(
-    atualizarModoEvento,
-    30000
-  );
+  mostrarPainelEvento(estado);
 }
 
 function mostrarPainelEvento({
@@ -890,25 +868,17 @@ function mostrarPainelEvento({
   botaoLink,
   novaAba = false
 }) {
-  const painel = document.getElementById(
-    "painelEventoAgora"
-  );
-
-  const elementoEtiqueta = document.getElementById(
+  const painel = obterElemento("painelEventoAgora");
+  const elementoEtiqueta = obterElemento(
     "painelEventoEtiqueta"
   );
-
-  const elementoTitulo = document.getElementById(
+  const elementoTitulo = obterElemento(
     "painelEventoTitulo"
   );
-
-  const elementoDescricao = document.getElementById(
+  const elementoDescricao = obterElemento(
     "painelEventoDescricao"
   );
-
-  const botao = document.getElementById(
-    "painelEventoBotao"
-  );
+  const botao = obterElemento("painelEventoBotao");
 
   if (!painel) {
     return;
@@ -938,44 +908,172 @@ function mostrarPainelEvento({
     elementoDescricao.textContent = descricao;
   }
 
-  if (botao) {
-    botao.textContent = botaoTexto;
-    botao.href = botaoLink || "#";
+  configurarBotaoPainel(
+    botao,
+    botaoTexto,
+    botaoLink,
+    novaAba
+  );
+}
 
-    if (novaAba) {
-      botao.target = "_blank";
-      botao.rel = "noopener noreferrer";
-    } else {
-      botao.removeAttribute("target");
-      botao.removeAttribute("rel");
-    }
+function configurarBotaoPainel(
+  botao,
+  texto,
+  endereco,
+  novaAba
+) {
+  if (!botao) {
+    return;
+  }
+
+  botao.textContent = texto;
+
+  if (!verificarLinkValido(endereco)) {
+    botao.href = "#";
+    botao.setAttribute("aria-disabled", "true");
+  } else {
+    botao.href = endereco;
+    botao.removeAttribute("aria-disabled");
+  }
+
+  if (novaAba && verificarLinkValido(endereco)) {
+    botao.target = "_blank";
+    botao.rel = "noopener noreferrer";
+  } else {
+    botao.removeAttribute("target");
+    botao.removeAttribute("rel");
   }
 }
 
 function ocultarPainelEventoAgora() {
-  const painel = document.getElementById(
-    "painelEventoAgora"
-  );
+  const painel = obterElemento("painelEventoAgora");
 
   if (painel) {
     painel.hidden = true;
   }
 }
 
-function criarDataHorario(dataISO, horario) {
-  return new Date(`${dataISO}T${horario}:00-03:00`);
+function verificarUltimoDia(dataHoje) {
+  const programacao = CONFIG_EVENTO.programacao;
+
+  if (
+    !Array.isArray(programacao) ||
+    programacao.length === 0
+  ) {
+    return false;
+  }
+
+  const ultimoDia = programacao.at(-1);
+
+  return ultimoDia?.dataISO === dataHoje;
 }
 
-function obterDataLocalISO(data) {
-  const ano = data.getFullYear();
+/* ==================================================
+   DATA E HORÁRIO
+================================================== */
 
-  const mes = String(
-    data.getMonth() + 1
-  ).padStart(2, "0");
+function criarDataHorario(dataISO, horario) {
+  if (!dataISO || !horario) {
+    return new Date(Number.NaN);
+  }
 
-  const dia = String(
-    data.getDate()
-  ).padStart(2, "0");
+  return new Date(
+    `${dataISO}T${horario}:00-03:00`
+  );
+}
 
-  return `${ano}-${mes}-${dia}`;
+function obterDataEventoISO(data) {
+  try {
+    const partes = new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone: FUSO_EVENTO,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    ).formatToParts(data);
+
+    const valores = {};
+
+    partes.forEach((parte) => {
+      valores[parte.type] = parte.value;
+    });
+
+    return (
+      `${valores.year}-` +
+      `${valores.month}-` +
+      `${valores.day}`
+    );
+  } catch (erro) {
+    console.warn(
+      "Não foi possível aplicar o fuso horário do evento.",
+      erro
+    );
+
+    const ano = data.getFullYear();
+    const mes = String(
+      data.getMonth() + 1
+    ).padStart(2, "0");
+    const dia = String(
+      data.getDate()
+    ).padStart(2, "0");
+
+    return `${ano}-${mes}-${dia}`;
+  }
+}
+
+/* ==================================================
+   RODAPÉ
+================================================== */
+
+function atualizarAnoRodape() {
+  definirTexto(
+    "anoAtual",
+    new Date().getFullYear()
+  );
+}
+
+/* ==================================================
+   UTILITÁRIOS
+================================================== */
+
+function obterElemento(id) {
+  return document.getElementById(id);
+}
+
+function definirTexto(id, texto) {
+  const elemento = obterElemento(id);
+
+  if (elemento) {
+    elemento.textContent = texto ?? "";
+  }
+}
+
+function obterIniciais(nome) {
+  if (typeof nome !== "string") {
+    return "";
+  }
+
+  return nome
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((parte) => parte.charAt(0))
+    .join("")
+    .toUpperCase();
+}
+
+function escaparHTML(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escaparAtributo(valor) {
+  return escaparHTML(valor);
 }
