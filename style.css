@@ -145,20 +145,27 @@ a {
   gap: 24px;
 }
 
-.logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.05rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
+.logo{
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
 }
 
-.logo::before {
-  content: "✦";
-  color: var(--cor-laranja);
-  font-size: 1.4rem;
+.logo-imagem{
+
+    height:56px;
+    width:auto;
+
+    transition:.35s ease;
+
+}
+
+.logo:hover .logo-imagem{
+
+    transform:scale(1.05);
+
 }
 
 .menu {
