@@ -221,21 +221,51 @@
       </div>
     </section>
 
-    <section class="secao" id="salas">
-      <div class="container">
+    <section class="secao secao-salas" id="salas">
+  <div class="container">
 
-        <div class="titulo-secao">
-          <span>Apresentação de trabalhos</span>
-          <h2>Salas por área</h2>
-        </div>
+    <div class="titulo-secao">
+      <span>Apresentação de trabalhos</span>
+      <h2>Salas por área</h2>
+    </div>
 
-        <p class="texto-centralizado">
-          Escolha sua área para acessar a sala correta no Google Meet.
-        </p>
+    <p class="texto-salas">
+      Selecione o dia do evento e escolha a sala correspondente
+      à área de apresentação do trabalho.
+    </p>
 
-        <div id="listaSalas" class="salas-grid">
-          <!-- As salas serão inseridas pelo JavaScript -->
-        </div>
+    <div
+      class="seletor-dias-salas"
+      id="seletorDiasSalas"
+      role="tablist"
+      aria-label="Dias das apresentações"
+    >
+      <!-- Os botões dos dias serão inseridos pelo JavaScript -->
+    </div>
+
+    <div class="salas-cabecalho-dia">
+      <div>
+        <span class="salas-dia-etiqueta">
+          Salas disponíveis
+        </span>
+
+        <h3 id="tituloDiaSalas">
+          Selecione um dia
+        </h3>
+      </div>
+
+      <p id="horarioDiaSalas">
+        Apresentações após o intervalo
+      </p>
+    </div>
+
+    <div
+      id="listaSalas"
+      class="areas-salas"
+      aria-live="polite"
+    >
+      <!-- As áreas e salas serão inseridas pelo JavaScript -->
+      </div>
 
       </div>
     </section>

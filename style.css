@@ -946,3 +946,354 @@ a {
     animation-iteration-count: 1 !important;
   }
 }
+
+/* ==================================================
+   SALAS POR DIA E ÁREA
+================================================== */
+
+.secao-salas {
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 90% 20%,
+      rgba(0, 255, 136, 0.07),
+      transparent 30%
+    );
+}
+
+.texto-salas {
+  max-width: 720px;
+  margin-top: -26px;
+  margin-bottom: 36px;
+  color: var(--cor-texto-suave);
+  font-size: 1rem;
+}
+
+.seletor-dias-salas {
+  margin-bottom: 36px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.botao-dia-sala {
+  min-height: 76px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+  background: transparent;
+  text-align: left;
+  transition:
+    color 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.botao-dia-sala:hover {
+  color: var(--cor-texto);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.botao-dia-sala.ativo {
+  color: #00150b;
+  border-color: rgba(0, 255, 136, 0.45);
+  background:
+    linear-gradient(
+      135deg,
+      var(--cor-verde),
+      #74ffb6
+    );
+  box-shadow:
+    0 12px 28px rgba(0, 255, 136, 0.17);
+}
+
+.botao-dia-sala strong {
+  font-size: 1rem;
+  font-weight: 1000;
+  letter-spacing: 0.02em;
+}
+
+.botao-dia-sala span {
+  font-size: 0.77rem;
+  font-weight: 700;
+}
+
+.salas-cabecalho-dia {
+  margin-bottom: 22px;
+  padding: 25px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 152, 0, 0.07),
+      rgba(0, 255, 136, 0.035)
+    );
+}
+
+.salas-dia-etiqueta {
+  color: var(--cor-laranja);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.salas-cabecalho-dia h3 {
+  margin-top: 4px;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1.1;
+}
+
+.salas-cabecalho-dia > p {
+  flex-shrink: 0;
+  color: var(--cor-verde);
+  font-size: 0.85rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.areas-salas {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.grupo-area {
+  padding: 28px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 28px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(0, 255, 136, 0.04),
+      rgba(255, 255, 255, 0.018)
+    );
+  box-shadow: var(--sombra);
+}
+
+.grupo-area-cabecalho {
+  margin-bottom: 22px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.grupo-area-cabecalho > div > span {
+  color: var(--cor-verde);
+  font-size: 0.69rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.grupo-area-cabecalho h4 {
+  margin-top: 5px;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  line-height: 1.08;
+}
+
+.quantidade-salas {
+  color: var(--cor-texto-suave);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.salas-area-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sala-card-novo {
+  min-height: 280px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--cor-borda);
+  border-radius: 22px;
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(0, 255, 136, 0.085),
+      transparent 38%
+    ),
+    rgba(2, 13, 9, 0.88);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.sala-card-novo:hover {
+  transform: translateY(-5px);
+  border-color: rgba(0, 255, 136, 0.3);
+  box-shadow:
+    0 18px 42px rgba(0, 0, 0, 0.25);
+}
+
+.sala-card-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.icone-meet {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: #00160b;
+  font-size: 1rem;
+  font-weight: 1000;
+  background:
+    linear-gradient(
+      135deg,
+      var(--cor-verde),
+      #7effbb
+    );
+}
+
+.sala-status {
+  color: var(--cor-verde);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sala-card-conteudo {
+  padding: 24px 0;
+}
+
+.sala-numero {
+  display: block;
+  color: var(--cor-laranja);
+  font-size: 0.75rem;
+  font-weight: 1000;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sala-complemento {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 152, 0, 0.2);
+  border-radius: 999px;
+  color: var(--cor-laranja-claro);
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: rgba(255, 152, 0, 0.06);
+}
+
+.sala-mediador {
+  margin-top: 22px;
+}
+
+.sala-mediador span {
+  display: block;
+  color: var(--cor-texto-suave);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.sala-mediador strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.botao-entrar-sala {
+  width: 100%;
+  margin-top: auto;
+}
+
+.botao-sala-indisponivel {
+  width: 100%;
+  margin-top: auto;
+  color: var(--cor-texto-suave);
+  border-color: var(--cor-borda);
+  cursor: default;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.botao-sala-indisponivel:hover {
+  transform: none;
+}
+
+.salas-vazio {
+  padding: 38px;
+  border: 1px dashed var(--cor-borda);
+  border-radius: 22px;
+  color: var(--cor-texto-suave);
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 850px) {
+  .seletor-dias-salas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .salas-area-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .texto-salas {
+    margin-top: -20px;
+  }
+
+  .seletor-dias-salas {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .botao-dia-sala {
+    min-height: 70px;
+    padding: 12px;
+  }
+
+  .salas-cabecalho-dia {
+    padding: 22px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .grupo-area {
+    padding: 20px;
+    border-radius: 22px;
+  }
+
+  .grupo-area-cabecalho {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sala-card-novo {
+    min-height: 260px;
+  }
+}

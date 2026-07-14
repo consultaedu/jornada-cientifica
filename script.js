@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarInformacoesEvento();
   carregarProgramacao();
   carregarPalestrantes();
-  carregarSalas();
+  carregarSalasPorDia();
   configurarMenu();
   configurarLinks();
   atualizarAnoRodape();
@@ -27,23 +27,35 @@ function carregarProgramacao() {
       return `
         <article class="programacao-card">
           <span class="programacao-data">
-            ${item.data}
+            ${escaparHTML(item.data)}
           </span>
 
           <div class="programacao-item">
-            <span>${item.horarioPalestra}</span>
+            <span>
+              ${escaparHTML(item.horarioPalestra)}
+            </span>
 
-            <h3>${item.palestra}</h3>
+            <h3>
+              ${escaparHTML(item.palestra)}
+            </h3>
 
-            <p>Transmissão ao vivo pelo YouTube</p>
+            <p>
+              Transmissão ao vivo pelo YouTube
+            </p>
           </div>
 
           <div class="programacao-item">
-            <span>${item.horarioSalas}</span>
+            <span>
+              ${escaparHTML(item.horarioSalas)}
+            </span>
 
-            <h3>Apresentação de trabalhos</h3>
+            <h3>
+              Apresentação de trabalhos
+            </h3>
 
-            <p>Salas divididas por áreas no Google Meet</p>
+            <p>
+              Salas divididas por áreas no Google Meet
+            </p>
           </div>
         </article>
       `;
@@ -60,11 +72,16 @@ function carregarPalestrantes() {
 
   lista.innerHTML = CONFIG_EVENTO.palestrantes
     .map((palestrante) => {
+      const nome = escaparHTML(palestrante.nome);
+      const descricao = escaparHTML(palestrante.descricao);
+      const data = escaparHTML(palestrante.data);
+
       const imagem = palestrante.foto
         ? `
           <img
-            src="${palestrante.foto}"
-            alt="Foto de ${palestrante.nome}"
+            src="${escaparAtributo(palestrante.foto)}"
+            alt="Foto de ${nome}"
+            loading="lazy"
           >
         `
         : `
@@ -81,11 +98,11 @@ function carregarPalestrantes() {
           </div>
 
           <div class="palestrante-informacoes">
-            <span>${palestrante.data}</span>
+            <span>${data}</span>
 
-            <h3>${palestrante.nome}</h3>
+            <h3>${nome}</h3>
 
-            <p>${palestrante.descricao}</p>
+            <p>${descricao}</p>
           </div>
 
         </article>
@@ -94,39 +111,240 @@ function carregarPalestrantes() {
     .join("");
 }
 
-function carregarSalas() {
+function carregarSalasPorDia() {
+  const seletor = document.getElementById("seletorDiasSalas");
+  const lista = document.getElementById("listaSalas");
+
+  if (!seletor || !lista) {
+    return;
+  }
+
+  const dias = CONFIG_EVENTO.diasSalas;
+
+  if (!Array.isArray(dias) || dias.length === 0) {
+    lista.innerHTML = `
+      <div class="salas-vazio">
+        Nenhuma sala foi cadastrada.
+      </div>
+    `;
+
+    return;
+  }
+
+  seletor.innerHTML = dias
+    .map((dia, indice) => {
+      return `
+        <button
+          type="button"
+          class="botao-dia-sala ${indice === 0 ? "ativo" : ""}"
+          data-dia="${escaparAtributo(dia.id)}"
+          role="tab"
+          aria-selected="${indice === 0 ? "true" : "false"}"
+        >
+          <strong>
+            ${escaparHTML(dia.dataCurta)}
+          </strong>
+
+          <span>
+            ${escaparHTML(dia.descricao)}
+          </span>
+        </button>
+      `;
+    })
+    .join("");
+
+  seletor
+    .querySelectorAll(".botao-dia-sala")
+    .forEach((botao) => {
+      botao.addEventListener("click", () => {
+        selecionarDiaSalas(botao.dataset.dia);
+      });
+    });
+
+  const diaInicial = encontrarDiaAtual(dias) || dias[0];
+
+  selecionarDiaSalas(diaInicial.id);
+}
+
+function selecionarDiaSalas(idDia) {
+  const dias = CONFIG_EVENTO.diasSalas;
+
+  const diaSelecionado = dias.find((dia) => dia.id === idDia);
+
+  if (!diaSelecionado) {
+    return;
+  }
+
+  document
+    .querySelectorAll(".botao-dia-sala")
+    .forEach((botao) => {
+      const ativo = botao.dataset.dia === idDia;
+
+      botao.classList.toggle("ativo", ativo);
+
+      botao.setAttribute(
+        "aria-selected",
+        String(ativo)
+      );
+    });
+
+  definirTexto(
+    "tituloDiaSalas",
+    `${diaSelecionado.data} — ${diaSelecionado.descricao}`
+  );
+
+  definirTexto(
+    "horarioDiaSalas",
+    diaSelecionado.horario
+  );
+
+  renderizarAreasSalas(diaSelecionado);
+}
+
+function renderizarAreasSalas(dia) {
   const lista = document.getElementById("listaSalas");
 
   if (!lista) {
     return;
   }
 
-  lista.innerHTML = CONFIG_EVENTO.salas
-    .map((sala) => {
+  if (!Array.isArray(dia.areas) || dia.areas.length === 0) {
+    lista.innerHTML = `
+      <div class="salas-vazio">
+        Nenhuma sala cadastrada para este dia.
+      </div>
+    `;
+
+    return;
+  }
+
+  lista.innerHTML = dia.areas
+    .map((area) => {
+      const salas = Array.isArray(area.salas)
+        ? area.salas
+        : [];
+
+      const quantidade = salas.length;
+
+      const textoQuantidade =
+        quantidade === 1
+          ? "1 sala disponível"
+          : `${quantidade} salas disponíveis`;
+
+      const cardsSalas = salas
+        .map((sala) => criarCardSala(sala))
+        .join("");
+
       return `
-        <article class="sala-card">
+        <section class="grupo-area">
 
-          <span class="sala-horario">
-            A partir das ${sala.horario}
-          </span>
+          <div class="grupo-area-cabecalho">
+            <div>
+              <span>Área do conhecimento</span>
 
-          <h3>${sala.area}</h3>
+              <h4>
+                ${escaparHTML(area.nome)}
+              </h4>
+            </div>
 
-          <p>${sala.nome}</p>
+            <span class="quantidade-salas">
+              ${textoQuantidade}
+            </span>
+          </div>
 
-          <a
-            href="${sala.link}"
-            class="botao botao-principal"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Entrar na sala
-          </a>
+          <div class="salas-area-grid">
+            ${cardsSalas}
+          </div>
 
-        </article>
+        </section>
       `;
     })
     .join("");
+}
+
+function criarCardSala(sala) {
+  const linkValido =
+    sala.link &&
+    sala.link !== "#" &&
+    sala.link.trim() !== "";
+
+  const complemento = sala.complemento
+    ? `
+      <span class="sala-complemento">
+        ${escaparHTML(sala.complemento)}
+      </span>
+    `
+    : "";
+
+  const botaoSala = linkValido
+    ? `
+      <a
+        href="${escaparAtributo(sala.link)}"
+        class="botao botao-principal botao-entrar-sala"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Entrar no Google Meet
+      </a>
+    `
+    : `
+      <span class="botao botao-sala-indisponivel">
+        Link disponível em breve
+      </span>
+    `;
+
+  return `
+    <article class="sala-card-novo">
+
+      <div class="sala-card-topo">
+        <span class="icone-meet" aria-hidden="true">
+          M
+        </span>
+
+        <span class="sala-status">
+          Google Meet
+        </span>
+      </div>
+
+      <div class="sala-card-conteudo">
+
+        <span class="sala-numero">
+          ${escaparHTML(sala.numero)}
+        </span>
+
+        ${complemento}
+
+        <div class="sala-mediador">
+          <span>Mediador</span>
+
+          <strong>
+            ${escaparHTML(sala.mediador)}
+          </strong>
+        </div>
+
+      </div>
+
+      ${botaoSala}
+
+    </article>
+  `;
+}
+
+function encontrarDiaAtual(dias) {
+  const hoje = new Date();
+
+  const diaHoje = hoje.getDate();
+  const mesHoje = hoje.getMonth();
+
+  if (mesHoje !== 10) {
+    return null;
+  }
+
+  return dias.find((dia) => {
+    const numeroData = Number.parseInt(dia.data, 10);
+
+    return numeroData === diaHoje;
+  });
 }
 
 function configurarLinks() {
@@ -209,4 +427,17 @@ function obterIniciais(nome) {
     .map((parte) => parte.charAt(0))
     .join("")
     .toUpperCase();
+}
+
+function escaparHTML(valor) {
+  return String(valor ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escaparAtributo(valor) {
+  return escaparHTML(valor);
 }
