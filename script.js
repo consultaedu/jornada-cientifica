@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   configurarMenu();
   configurarLinks();
   atualizarAnoRodape();
+  iniciarContagemRegressiva();
 });
 
 function carregarInformacoesEvento() {
@@ -427,6 +428,174 @@ function obterIniciais(nome) {
     .map((parte) => parte.charAt(0))
     .join("")
     .toUpperCase();
+}
+
+function iniciarContagemRegressiva() {
+  const configuracaoDatas = CONFIG_EVENTO.datasEvento;
+
+  if (!configuracaoDatas) {
+    ocultarContagemEvento();
+    return;
+  }
+
+  const inicio = new Date(configuracaoDatas.inicio);
+  const fim = new Date(configuracaoDatas.fim);
+
+  if (
+    Number.isNaN(inicio.getTime()) ||
+    Number.isNaN(fim.getTime())
+  ) {
+    console.error(
+      "As datas do evento no config.js são inválidas."
+    );
+
+    ocultarContagemEvento();
+    return;
+  }
+
+  function atualizarContagem() {
+    const agora = new Date();
+
+    if (agora < inicio) {
+      mostrarContagemAntesDoEvento(inicio, agora);
+      return;
+    }
+
+    if (agora <= fim) {
+      mostrarStatusEvento(
+        "Evento em andamento",
+        "ao-vivo"
+      );
+      return;
+    }
+
+    mostrarStatusEvento(
+      "Evento encerrado",
+      "encerrado"
+    );
+  }
+
+  atualizarContagem();
+
+  window.setInterval(atualizarContagem, 1000);
+}
+
+function mostrarContagemAntesDoEvento(inicio, agora) {
+  const diferenca = inicio.getTime() - agora.getTime();
+
+  const segundo = 1000;
+  const minuto = segundo * 60;
+  const hora = minuto * 60;
+  const dia = hora * 24;
+
+  const dias = Math.floor(diferenca / dia);
+
+  const horas = Math.floor(
+    (diferenca % dia) / hora
+  );
+
+  const minutos = Math.floor(
+    (diferenca % hora) / minuto
+  );
+
+  const segundos = Math.floor(
+    (diferenca % minuto) / segundo
+  );
+
+  definirTexto(
+    "contadorDias",
+    formatarNumeroContagem(dias)
+  );
+
+  definirTexto(
+    "contadorHoras",
+    formatarNumeroContagem(horas)
+  );
+
+  definirTexto(
+    "contadorMinutos",
+    formatarNumeroContagem(minutos)
+  );
+
+  definirTexto(
+    "contadorSegundos",
+    formatarNumeroContagem(segundos)
+  );
+
+  const grade = document.getElementById("contagemGrid");
+  const status = document.getElementById("statusEvento");
+  const etiqueta = document.getElementById("contagemEtiqueta");
+  const container = document.getElementById("contagemEvento");
+
+  if (grade) {
+    grade.hidden = false;
+  }
+
+  if (status) {
+    status.hidden = true;
+  }
+
+  if (etiqueta) {
+    etiqueta.hidden = false;
+    etiqueta.textContent = "Faltam";
+  }
+
+  if (container) {
+    container.classList.remove(
+      "evento-ao-vivo",
+      "evento-encerrado"
+    );
+  }
+}
+
+function mostrarStatusEvento(texto, tipo) {
+  const grade = document.getElementById("contagemGrid");
+  const status = document.getElementById("statusEvento");
+  const etiqueta = document.getElementById("contagemEtiqueta");
+  const statusTexto = document.getElementById(
+    "statusEventoTexto"
+  );
+  const container = document.getElementById("contagemEvento");
+
+  if (grade) {
+    grade.hidden = true;
+  }
+
+  if (etiqueta) {
+    etiqueta.hidden = true;
+  }
+
+  if (status) {
+    status.hidden = false;
+  }
+
+  if (statusTexto) {
+    statusTexto.textContent = texto;
+  }
+
+  if (container) {
+    container.classList.toggle(
+      "evento-ao-vivo",
+      tipo === "ao-vivo"
+    );
+
+    container.classList.toggle(
+      "evento-encerrado",
+      tipo === "encerrado"
+    );
+  }
+}
+
+function formatarNumeroContagem(numero) {
+  return String(Math.max(0, numero)).padStart(2, "0");
+}
+
+function ocultarContagemEvento() {
+  const contagem = document.getElementById("contagemEvento");
+
+  if (contagem) {
+    contagem.hidden = true;
+  }
 }
 
 function escaparHTML(valor) {
