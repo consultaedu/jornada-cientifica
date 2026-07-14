@@ -18,9 +18,9 @@ const CONFIG_EVENTO = {
     normas: "https://drive.usercontent.google.com/u/0/uc?id=1jT993IEqNF4sSkXNt_aWR2nkNM8_3ddW&export=download",
     youtube: "https://www.youtube.com/@grupofaveni",
 
-    modeloResumoWord: "https://SEU-LINK-DO-MODELO-WORD-AQUI",
-    modeloSlide: "https://SEU-LINK-DO-MODELO-SLIDE-AQUI",
-    modeloEPoster: "https://SEU-LINK-DO-EPOSTER-AQUI"
+    modeloResumoWord: "https://drive.usercontent.google.com/u/0/uc?id=1Y9SQYPU3-aDvktaXsgNv44szZQDNl87h&export=download",
+    modeloSlide: "https://drive.usercontent.google.com/u/0/uc?id=1f-zGuYki8cOZJDxVeCMt8z51srzBaGkV&export=download",
+    modeloEPoster: "https://drive.usercontent.google.com/u/0/uc?id=1qKtRY3oSqRfvFOWKFBNaWpQhBqxIIxPH&export=download"
   },
 
   palestrantes: [
