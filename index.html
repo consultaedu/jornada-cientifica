@@ -15,7 +15,7 @@
 
   <title>Jornada Científica</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body>
@@ -80,17 +80,16 @@
             10 a 13 de novembro
           </p>
 
-          <div
-  class="contagem-evento"
-  id="contagemEvento"
-  aria-live="polite"
->
-  <p class="contagem-etiqueta" id="contagemEtiqueta">
-    Faltam
-  </p>
+<div class="contagem-evento" id="contagemEvento">
+  <div class="contagem-cabecalho">
+    <span class="contagem-ponto"></span>
+
+    <p id="contagemEtiqueta">
+      Contagem regressiva
+    </p>
+  </div>
 
   <div class="contagem-grid" id="contagemGrid">
-
     <div class="contagem-item">
       <strong id="contadorDias">00</strong>
       <span>Dias</span>
@@ -110,7 +109,6 @@
       <strong id="contadorSegundos">00</strong>
       <span>Segundos</span>
     </div>
-
   </div>
 
   <div class="status-evento" id="statusEvento" hidden>
@@ -408,8 +406,8 @@
     </div>
   </footer>
 
-  <script src="config.js"></script>
-  <script src="script.js"></script>
+  <script src="config.js?v=2"></script>
+  <script src="script.js?v=2"></script>
 
 </body>
 </html>

@@ -1552,3 +1552,147 @@ a {
     min-width: 0;
   }
 }
+
+/* ==================================================
+   CONTAGEM REGRESSIVA
+================================================== */
+
+.contagem-evento {
+  width: min(100%, 520px);
+  margin-top: 28px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(0, 255, 136, 0.07),
+      rgba(255, 255, 255, 0.025)
+    );
+  box-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+}
+
+.contagem-cabecalho {
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.contagem-cabecalho p {
+  color: var(--cor-texto-suave);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contagem-ponto {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cor-laranja);
+  box-shadow: 0 0 16px rgba(255, 152, 0, 0.55);
+}
+
+.contagem-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.contagem-item {
+  min-width: 0;
+  padding: 13px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 13px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.contagem-item strong {
+  display: block;
+  color: var(--cor-verde);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  line-height: 1;
+  letter-spacing: -0.055em;
+}
+
+.contagem-item span {
+  display: block;
+  margin-top: 7px;
+  color: var(--cor-texto-suave);
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.status-evento {
+  min-height: 66px;
+  padding: 14px 18px;
+  align-items: center;
+  gap: 13px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Garante que o atributo hidden realmente esconda o elemento. */
+.contagem-evento [hidden] {
+  display: none !important;
+}
+
+.status-evento:not([hidden]) {
+  display: flex;
+}
+
+.status-evento-ponto {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--cor-verde);
+  box-shadow:
+    0 0 0 6px rgba(0, 255, 136, 0.1),
+    0 0 20px rgba(0, 255, 136, 0.6);
+}
+
+.evento-ao-vivo {
+  border-color: rgba(0, 255, 136, 0.28);
+}
+
+.evento-ao-vivo .status-evento-ponto {
+  animation: pulsarEvento 1.4s ease-in-out infinite;
+}
+
+.evento-encerrado .status-evento-ponto {
+  background: var(--cor-texto-suave);
+  box-shadow: none;
+}
+
+@keyframes pulsarEvento {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+}
+
+@media (max-width: 560px) {
+  .contagem-evento {
+    width: 100%;
+  }
+
+  .contagem-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

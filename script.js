@@ -610,3 +610,146 @@ function escaparHTML(valor) {
 function escaparAtributo(valor) {
   return escaparHTML(valor);
 }
+
+function iniciarContagemRegressiva() {
+  const datas = CONFIG_EVENTO.datasEvento;
+
+  if (!datas?.inicio || !datas?.fim) {
+    console.error("datasEvento não foi configurado no config.js.");
+    return;
+  }
+
+  const inicio = new Date(datas.inicio);
+  const fim = new Date(datas.fim);
+
+  if (
+    Number.isNaN(inicio.getTime()) ||
+    Number.isNaN(fim.getTime())
+  ) {
+    console.error("As datas da Jornada são inválidas.");
+    return;
+  }
+
+  const atualizar = () => {
+    const agora = new Date();
+
+    if (agora < inicio) {
+      const diferenca = inicio.getTime() - agora.getTime();
+
+      const dias = Math.floor(
+        diferenca / (1000 * 60 * 60 * 24)
+      );
+
+      const horas = Math.floor(
+        (diferenca / (1000 * 60 * 60)) % 24
+      );
+
+      const minutos = Math.floor(
+        (diferenca / (1000 * 60)) % 60
+      );
+
+      const segundos = Math.floor(
+        (diferenca / 1000) % 60
+      );
+
+      atualizarContador("contadorDias", dias);
+      atualizarContador("contadorHoras", horas);
+      atualizarContador("contadorMinutos", minutos);
+      atualizarContador("contadorSegundos", segundos);
+
+      alternarExibicaoContagem(true);
+      return;
+    }
+
+    if (agora <= fim) {
+      mostrarStatusDaJornada(
+        "Jornada acontecendo agora",
+        "ao-vivo"
+      );
+      return;
+    }
+
+    mostrarStatusDaJornada(
+      "Esta edição foi encerrada",
+      "encerrado"
+    );
+  };
+
+  atualizar();
+  window.setInterval(atualizar, 1000);
+}
+
+function atualizarContador(id, valor) {
+  const elemento = document.getElementById(id);
+
+  if (elemento) {
+    elemento.textContent = String(valor).padStart(2, "0");
+  }
+}
+
+function alternarExibicaoContagem(mostrarContagem) {
+  const grade = document.getElementById("contagemGrid");
+  const status = document.getElementById("statusEvento");
+  const etiqueta = document.getElementById("contagemEtiqueta");
+  const container = document.getElementById("contagemEvento");
+
+  if (grade) {
+    grade.hidden = !mostrarContagem;
+  }
+
+  if (status) {
+    status.hidden = mostrarContagem;
+  }
+
+  if (etiqueta) {
+    etiqueta.textContent = "Contagem regressiva";
+  }
+
+  if (container) {
+    container.classList.remove(
+      "evento-ao-vivo",
+      "evento-encerrado"
+    );
+  }
+}
+
+function mostrarStatusDaJornada(texto, tipo) {
+  const grade = document.getElementById("contagemGrid");
+  const status = document.getElementById("statusEvento");
+  const textoStatus = document.getElementById(
+    "statusEventoTexto"
+  );
+  const etiqueta = document.getElementById("contagemEtiqueta");
+  const container = document.getElementById("contagemEvento");
+
+  if (grade) {
+    grade.hidden = true;
+  }
+
+  if (status) {
+    status.hidden = false;
+  }
+
+  if (textoStatus) {
+    textoStatus.textContent = texto;
+  }
+
+  if (etiqueta) {
+    etiqueta.textContent =
+      tipo === "ao-vivo"
+        ? "Acompanhe a programação"
+        : "Jornada Científica";
+  }
+
+  if (container) {
+    container.classList.toggle(
+      "evento-ao-vivo",
+      tipo === "ao-vivo"
+    );
+
+    container.classList.toggle(
+      "evento-encerrado",
+      tipo === "encerrado"
+    );
+  }
+}
