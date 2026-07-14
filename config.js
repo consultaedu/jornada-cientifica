@@ -9,8 +9,8 @@ const CONFIG_EVENTO = {
   periodo: "10 a 13 de novembro",
 
   datasEvento: {
-    inicio: "2026-11-10T19:00:00-03:00",
-    fim: "2026-11-13T22:00:00-03:00"
+    inicio: "2026-07-14T22:00:00-03:00",
+    fim: "2026-07-15T01:00:00-03:00"
   },
 
   links: {
