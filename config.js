@@ -1,4 +1,5 @@
-const CONFIG_EVENTO = {
+/* Fallback local. O conteúdo principal é carregado da pasta conteudo/. */
+window.CONFIG_EVENTO_FALLBACK = {
   edicao: "6ª Jornada Científica",
 
   tema: "Ciência e Sociedade",

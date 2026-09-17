@@ -1767,3 +1767,85 @@ a {
     width: 100%;
   }
 }
+/* ==================================================
+   GALERIA / PUBLICAÇÕES DO CMS
+================================================== */
+
+.publicacoes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.publicacao-card {
+  overflow: hidden;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-grande);
+  background: var(--cor-card);
+  box-shadow: var(--sombra);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.publicacao-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(0, 255, 136, 0.3);
+}
+
+.publicacao-link {
+  display: block;
+  height: 100%;
+}
+
+.publicacao-imagem {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #07120d;
+}
+
+.publicacao-imagem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.publicacao-card:hover .publicacao-imagem img {
+  transform: scale(1.025);
+}
+
+.publicacao-conteudo {
+  padding: 22px 24px 25px;
+}
+
+.publicacao-conteudo span {
+  color: var(--cor-laranja);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.publicacao-conteudo h3 {
+  margin-top: 6px;
+  font-size: 1.22rem;
+  line-height: 1.25;
+}
+
+.publicacao-conteudo p {
+  margin-top: 8px;
+  color: var(--cor-texto-suave);
+}
+
+@media (max-width: 900px) {
+  .publicacoes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .publicacoes-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,273 @@
+media:
+  - name: geral
+    label: Imagens gerais
+    input: assets/imagens
+    output: /assets/imagens
+    categories: [image]
+    rename: safe
+  - name: palestrantes
+    label: Fotos de palestrantes
+    input: assets/uploads/palestrantes
+    output: /assets/uploads/palestrantes
+    categories: [image]
+    rename: safe
+  - name: galeria
+    label: Galeria da Jornada
+    input: assets/uploads/galeria
+    output: /assets/uploads/galeria
+    categories: [image]
+    rename: safe
+
+settings:
+  content:
+    merge: true
+
+content:
+  - name: evento
+    label: Informações do evento
+    type: file
+    path: conteudo/evento.json
+    format: json
+    operations:
+      delete: false
+    fields:
+      - name: edicao
+        label: Edição
+        type: string
+        required: true
+      - name: tema
+        label: Tema
+        type: string
+        required: true
+      - name: subtitulo
+        label: Subtítulo
+        type: text
+      - name: periodo
+        label: Período exibido
+        type: string
+        description: "Exemplo: 10 a 13 de novembro"
+      - name: cartaz
+        label: Cartaz da página inicial
+        type: image
+        options:
+          media: geral
+      - name: datasEvento
+        label: Datas e horários do evento
+        type: object
+        fields:
+          - name: inicio
+            label: Início
+            type: string
+            required: true
+            description: "Formato ISO com fuso. Exemplo: 2026-11-10T19:00:00-03:00"
+          - name: fim
+            label: Fim
+            type: string
+            required: true
+            description: "Formato ISO com fuso. Exemplo: 2026-11-13T22:00:00-03:00"
+      - name: links
+        label: Links principais
+        type: object
+        fields:
+          - name: ojs
+            label: OJS / submissão
+            type: string
+          - name: normas
+            label: Normas
+            type: string
+          - name: youtube
+            label: Canal / transmissão do YouTube
+            type: string
+          - name: modeloResumoWord
+            label: Modelo de resumo em Word
+            type: string
+          - name: modeloSlide
+            label: Modelo de slide
+            type: string
+          - name: modeloEPoster
+            label: Modelo de e-pôster
+            type: string
+
+  - name: palestrantes
+    label: Palestrantes
+    type: file
+    path: conteudo/palestrantes.json
+    format: json
+    list: true
+    operations:
+      delete: false
+    fields:
+      - name: nome
+        label: Nome
+        type: string
+        required: true
+      - name: descricao
+        label: Formação / descrição
+        type: string
+      - name: data
+        label: Data exibida
+        type: string
+        description: "Exemplo: 10 de novembro"
+      - name: foto
+        label: Foto
+        type: image
+        options:
+          media: palestrantes
+
+  - name: programacao
+    label: Programação
+    type: file
+    path: conteudo/programacao.json
+    format: json
+    list: true
+    operations:
+      delete: false
+    fields:
+      - name: data
+        label: Data exibida
+        type: string
+        required: true
+      - name: dataISO
+        label: Data ISO
+        type: string
+        required: true
+        description: "Exemplo: 2026-11-10"
+      - name: palestra
+        label: Palestra / atividade principal
+        type: text
+        required: true
+      - name: horarioPalestra
+        label: Horário da palestra
+        type: string
+        description: "Exemplo: 19h às 20h"
+      - name: horarioSalas
+        label: Horário das salas
+        type: string
+        description: "Exemplo: 20h20"
+      - name: horarios
+        label: Horários usados pelo modo automático do site
+        type: object
+        fields:
+          - name: inicioPalestra
+            label: Início da palestra
+            type: string
+            description: "Exemplo: 19:00"
+          - name: fimPalestra
+            label: Fim da palestra
+            type: string
+            description: "Exemplo: 20:00"
+          - name: inicioSalas
+            label: Início das salas
+            type: string
+            description: "Exemplo: 20:20"
+          - name: fimDia
+            label: Fim do dia
+            type: string
+            description: "Exemplo: 22:00"
+      - name: youtube
+        label: Link da transmissão deste dia
+        type: string
+
+  - name: salas
+    label: Salas do Meet
+    type: file
+    path: conteudo/salas.json
+    format: json
+    list: true
+    operations:
+      delete: false
+    fields:
+      - name: id
+        label: ID interno
+        type: string
+        required: true
+        description: "Deve ser único. Exemplo: dia-10"
+      - name: data
+        label: Data
+        type: string
+        required: true
+      - name: dataCurta
+        label: Data curta
+        type: string
+        description: "Exemplo: 10 NOV."
+      - name: descricao
+        label: Descrição do dia
+        type: string
+        description: "Exemplo: Primeiro dia"
+      - name: horario
+        label: Horário exibido
+        type: string
+        description: "Exemplo: A partir das 20h20"
+      - name: areas
+        label: Áreas do conhecimento
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{nome}"
+        fields:
+          - name: nome
+            label: Área
+            type: string
+            required: true
+          - name: salas
+            label: Salas
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{numero} — {mediador}"
+            fields:
+              - name: numero
+                label: Sala
+                type: string
+                required: true
+              - name: complemento
+                label: Complemento
+                type: string
+                description: "Opcional. Exemplo: Sala 2 da área"
+              - name: mediador
+                label: Mediador(a)
+                type: string
+              - name: link
+                label: Link do Google Meet
+                type: string
+
+  - name: publicacoes
+    label: Galeria / Publicações
+    type: file
+    path: conteudo/publicacoes.json
+    format: json
+    list: true
+    operations:
+      delete: false
+    fields:
+      - name: publicado
+        label: Exibir no site
+        type: boolean
+        default: true
+      - name: imagem
+        label: Imagem
+        type: image
+        required: true
+        options:
+          media: galeria
+      - name: titulo
+        label: Título
+        type: string
+        required: true
+      - name: data
+        label: Data / legenda curta
+        type: string
+        description: "Exemplo: 10 de novembro de 2026"
+      - name: descricao
+        label: Descrição
+        type: text
+      - name: alt
+        label: Texto alternativo da imagem
+        type: string
+        description: "Opcional. Ajuda na acessibilidade."
+      - name: link
+        label: Link ao clicar
+        type: string
+        description: "Opcional. Pode apontar para notícia, vídeo ou outra página."

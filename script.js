@@ -8,15 +8,21 @@ const FUSO_EVENTO = "America/Sao_Paulo";
 const INTERVALO_RELOGIO = 1000;
 
 let intervaloRelogioSite = null;
+let CONFIG_EVENTO = window.CONFIG_EVENTO_FALLBACK || {};
 
 /* ==================================================
-   INICIALIZAÇÃO
+   INICIALIZAÇÃO / CONTEÚDO DO CMS
 ================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", inicializarSite);
+
+async function inicializarSite() {
+  await carregarConteudoCMS();
+
   carregarInformacoesEvento();
   carregarProgramacao();
   carregarPalestrantes();
+  carregarPublicacoes();
   carregarSalasPorDia();
 
   configurarMenu();
@@ -24,7 +30,44 @@ document.addEventListener("DOMContentLoaded", () => {
   atualizarAnoRodape();
 
   iniciarRelogioSite();
-});
+}
+
+async function carregarConteudoCMS() {
+  try {
+    const [evento, palestrantes, programacao, diasSalas, publicacoes] =
+      await Promise.all([
+        buscarJSON("conteudo/evento.json"),
+        buscarJSON("conteudo/palestrantes.json"),
+        buscarJSON("conteudo/programacao.json"),
+        buscarJSON("conteudo/salas.json"),
+        buscarJSON("conteudo/publicacoes.json")
+      ]);
+
+    CONFIG_EVENTO = {
+      ...CONFIG_EVENTO,
+      ...evento,
+      palestrantes,
+      programacao,
+      diasSalas,
+      publicacoes
+    };
+  } catch (erro) {
+    console.warn(
+      "Não foi possível carregar o conteúdo do CMS. Usando o conteúdo de segurança do config.js.",
+      erro
+    );
+  }
+}
+
+async function buscarJSON(caminho) {
+  const resposta = await fetch(caminho, { cache: "no-store" });
+
+  if (!resposta.ok) {
+    throw new Error(`${caminho}: HTTP ${resposta.status}`);
+  }
+
+  return resposta.json();
+}
 
 /* ==================================================
    INFORMAÇÕES PRINCIPAIS
@@ -35,6 +78,12 @@ function carregarInformacoesEvento() {
   definirTexto("eventoTema", CONFIG_EVENTO.tema);
   definirTexto("eventoSubtitulo", CONFIG_EVENTO.subtitulo);
   definirTexto("eventoData", CONFIG_EVENTO.periodo);
+
+  const cartaz = obterElemento("cartazEvento");
+
+  if (cartaz && CONFIG_EVENTO.cartaz) {
+    cartaz.src = CONFIG_EVENTO.cartaz;
+  }
 }
 
 /* ==================================================
@@ -167,6 +216,88 @@ function criarCardPalestrante(palestrante) {
 
         <p>${descricao}</p>
       </div>
+    </article>
+  `;
+}
+
+/* ==================================================
+   GALERIA / PUBLICAÇÕES
+================================================== */
+
+function carregarPublicacoes() {
+  const secao = obterElemento("galeria");
+  const lista = obterElemento("listaPublicacoes");
+  const publicacoes = Array.isArray(CONFIG_EVENTO.publicacoes)
+    ? CONFIG_EVENTO.publicacoes.filter(
+        (item) => item && item.publicado !== false && item.imagem
+      )
+    : [];
+
+  if (!secao || !lista) {
+    return;
+  }
+
+  const menuGaleria = obterElemento("menuGaleria");
+
+  if (publicacoes.length === 0) {
+    secao.hidden = true;
+    lista.innerHTML = "";
+
+    if (menuGaleria) {
+      menuGaleria.hidden = true;
+    }
+
+    return;
+  }
+
+  secao.hidden = false;
+
+  if (menuGaleria) {
+    menuGaleria.hidden = false;
+  }
+  lista.innerHTML = publicacoes
+    .map((item) => criarCardPublicacao(item))
+    .join("");
+}
+
+function criarCardPublicacao(item) {
+  const titulo = escaparHTML(item.titulo || "Registro da Jornada");
+  const data = escaparHTML(item.data || "");
+  const descricao = escaparHTML(item.descricao || "");
+  const imagem = escaparAtributo(item.imagem);
+  const alt = escaparAtributo(item.alt || item.titulo || "Registro da Jornada Científica");
+  const linkValido = verificarLinkValido(item.link);
+
+  const conteudo = `
+    <div class="publicacao-imagem">
+      <img src="${imagem}" alt="${alt}" loading="lazy">
+    </div>
+
+    <div class="publicacao-conteudo">
+      ${data ? `<span>${data}</span>` : ""}
+      <h3>${titulo}</h3>
+      ${descricao ? `<p>${descricao}</p>` : ""}
+    </div>
+  `;
+
+  if (linkValido) {
+    return `
+      <article class="publicacao-card">
+        <a
+          href="${escaparAtributo(item.link)}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="publicacao-link"
+        >
+          ${conteudo}
+        </a>
+      </article>
+    `;
+  }
+
+  return `
+    <article class="publicacao-card">
+      ${conteudo}
     </article>
   `;
 }
@@ -573,7 +704,7 @@ function atualizarContagemRegressiva(agora) {
     Number.isNaN(fim.getTime())
   ) {
     console.error(
-      "As datas do evento configuradas no config.js são inválidas."
+      "As datas do evento configuradas no painel são inválidas."
     );
 
     ocultarContagemEvento();

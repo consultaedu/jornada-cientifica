@@ -1,0 +1,61 @@
+JORNADA CIENTÍFICA — PAINEL DE CONTEÚDO (PAGES CMS)
+===================================================
+
+O site foi adaptado para usar arquivos JSON na pasta /conteudo.
+O Pages CMS edita esses arquivos e faz upload das imagens direto no GitHub.
+
+COMO ATIVAR
+-----------
+1. Envie todos os arquivos deste pacote para a raiz do repositório:
+   https://github.com/consultaedu/jornada-cientifica
+
+2. Confirme que o arquivo .pages.yml ficou na raiz do repositório.
+
+3. Abra:
+   https://app.pagescms.org
+
+4. Entre com a conta do GitHub que tem acesso ao repositório.
+
+5. Instale/autorize o aplicativo Pages CMS para a organização/conta que possui
+   o repositório "consultaedu/jornada-cientifica".
+
+6. No Pages CMS, abra o repositório "jornada-cientifica" e a branch "main".
+
+PRONTO.
+
+O painel terá estas áreas:
+- Informações do evento
+- Palestrantes
+- Programação
+- Salas do Meet
+- Galeria / Publicações
+
+IMAGENS
+-------
+- Cartaz: upload pelo campo "Cartaz da página inicial".
+- Palestrantes: upload pelo campo "Foto".
+- Galeria: crie um item em "Galeria / Publicações", envie a imagem, coloque
+  título/descrição e deixe "Exibir no site" ativado.
+
+A galeria não aparece no site enquanto não existir publicação visível.
+Ao salvar uma alteração no Pages CMS, ele cria um commit no GitHub e o GitHub
+Pages publica a nova versão normalmente.
+
+PASTAS DE UPLOAD
+----------------
+assets/imagens
+assets/uploads/palestrantes
+assets/uploads/galeria
+
+IMPORTANTE
+----------
+O arquivo config.js agora é apenas um fallback de segurança. O conteúdo que você
+edita normalmente fica nos arquivos da pasta conteudo/.
+
+Arquivos principais do CMS:
+.pages.yml
+conteudo/evento.json
+conteudo/palestrantes.json
+conteudo/programacao.json
+conteudo/salas.json
+conteudo/publicacoes.json

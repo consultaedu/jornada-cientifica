@@ -19,7 +19,7 @@
 
   <title>6ª Jornada Científica | Grupo Educacional Faveni</title>
 
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
 </head>
 
 <body>
@@ -51,6 +51,7 @@
         <a href="#sobre">Sobre</a>
         <a href="#programacao">Programação</a>
         <a href="#palestrantes">Palestrantes</a>
+        <a href="#galeria" id="menuGaleria">Galeria</a>
         <a href="#ao-vivo">Ao vivo</a>
         <a href="#salas">Salas</a>
         <a href="#submissao">Submissão</a>
@@ -188,6 +189,7 @@
 
       <div class="mockup-tela">
         <img
+          id="cartazEvento"
           src="assets/imagens/cartaz-jornada.png"
           alt="Cartaz da Jornada Científica"
         >
@@ -274,6 +276,21 @@
 
         <div id="listaPalestrantes" class="palestrantes-grid">
           <!-- Os palestrantes serão inseridos pelo JavaScript -->
+        </div>
+
+      </div>
+    </section>
+
+    <section class="secao secao-galeria" id="galeria" hidden>
+      <div class="container">
+
+        <div class="titulo-secao">
+          <span>Registros do evento</span>
+          <h2>Galeria da Jornada</h2>
+        </div>
+
+        <div id="listaPublicacoes" class="publicacoes-grid">
+          <!-- As publicações serão inseridas pelo JavaScript -->
         </div>
 
       </div>
@@ -483,8 +500,8 @@
     </div>
   </footer>
 
-  <script src="config.js?v=18"></script>
-  <script src="script.js?v=18"></script>
+  <script src="config.js?v=19"></script>
+  <script src="script.js?v=19"></script>
 
 </body>
 </html>

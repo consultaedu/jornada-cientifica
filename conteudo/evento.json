@@ -1,0 +1,19 @@
+{
+  "edicao": "6ª Jornada Científica",
+  "tema": "Ciência e Sociedade",
+  "subtitulo": "Conectando saberes diante das mudanças climáticas",
+  "periodo": "10 a 13 de novembro",
+  "datasEvento": {
+    "inicio": "2026-11-10T19:00:00-03:00",
+    "fim": "2026-11-13T22:00:00-03:00"
+  },
+  "links": {
+    "ojs": "https://revista.grupofaveni.com.br/index.php/jornadacientifica/about/submissions",
+    "normas": "https://drive.usercontent.google.com/u/0/uc?id=1jT993IEqNF4sSkXNt_aWR2nkNM8_3ddW&export=download",
+    "youtube": "https://www.youtube.com/@grupofaveni",
+    "modeloResumoWord": "https://drive.usercontent.google.com/u/0/uc?id=1Y9SQYPU3-aDvktaXsgNv44szZQDNl87h&export=download",
+    "modeloSlide": "https://drive.usercontent.google.com/u/0/uc?id=1f-zGuYki8cOZJDxVeCMt8z51srzBaGkV&export=download",
+    "modeloEPoster": "https://drive.usercontent.google.com/u/0/uc?id=1qKtRY3oSqRfvFOWKFBNaWpQhBqxIIxPH&export=download"
+  },
+  "cartaz": "/assets/imagens/cartaz-jornada.png"
+}
