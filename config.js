@@ -1,6 +1,6 @@
 /* Fallback local. O conteúdo principal é carregado da pasta conteudo/. */
 window.CONFIG_EVENTO_FALLBACK = {
-  edicao: "6ª Jornada Científica",
+  edicao: "7ª Jornada Científica",
 
   tema: "Ciência e Sociedade",
 
